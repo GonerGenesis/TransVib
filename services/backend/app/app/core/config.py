@@ -17,8 +17,6 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     SECRET_KEY: str
 
-# settings = Settings()
-
 
 @lru_cache()
 def get_settings() -> Settings:
