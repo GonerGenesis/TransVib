@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "transvib"
+version = "0.1.0"
+description = ""
+authors = ["gunnar.kistner@gmail.com <gunnar.kistner@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.85.1"
+uvicorn = {extras = ["standard"], version = "^0.19.0"}
+strawberry-graphql = {extras = ["fastapi"], version = "^0.137.0"}
+tortoise-orm = "^0.19.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
