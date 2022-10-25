@@ -1,1 +1,1 @@
-from .models import User, Ship, Frame, FramePoint, FrameSegment, FrameCSValues
+from app.db.models.models import User, Ship, Frame, FramePoint, FrameSegment, FrameCSValues
