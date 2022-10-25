@@ -9,5 +9,5 @@ class ShipSchema:
     title: str
     description: str
     author: str
-    frames: List["Frame"]
+    # frames: List["Frame"]
 

@@ -16,3 +16,7 @@ async def create_user(self, username: str, password: str, full_name: str = ""):
         raise HTTPException(status_code=401, detail=f"Sorry, that username already exists.")
 
     return await user_obj
+
+
+async def get_user_by_id(self, id: int):
+    return await User.get(id=id)
