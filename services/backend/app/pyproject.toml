@@ -8,14 +8,21 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = "^0.85.1"
-uvicorn = {extras = ["standard"], version = "^0.19.0"}
+uvicorn = "^0.19.0"
 strawberry-graphql = {extras = ["fastapi"], version = "^0.137.1"}
 tortoise-orm = "^0.19.2"
 python-jose = "^3.3.0"
 passlib = "^1.7.4"
 asyncpg = "^0.26.0"
+aerich = "^0.7.1"
+bcrypt = "^4.0.1"
 
 
+
+[tool.aerich]
+tortoise_orm = "app.db.functions.initialise.TORTOISE_ORM"
+location = "./migrations"
+src_folder = "./."
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,81 @@
+version: '3.10'
+
+services:
+
+  backend:
+    build:
+      context: ./services/backend
+      dockerfile: backend.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-true}
+    ports:
+      - 5000:5000
+    env_file:
+      - .env
+    # environment:
+      # - ENVIRONMENT=dev
+      # - TESTING=0
+      # - DATABASE_URL=postgres://postgres:dda73c8802c63a805b43fb7ee5b27ebeaef7aaa5a27d3170f2d8438e2e8d4d4f@139.30.247.100/gschwi-fast-vue
+      # - DATABASE_TEST_URL=postgres://postgres:dda73c8802c63a805b43fb7ee5b27ebeaef7aaa5a27d3170f2d8438e2e8d4d4f@db:5432/trans-vib
+      # - SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+      # - FIRST_SUPERUSER=admin
+      # - FIRST_SUPERUSER_PASSWORD=1301aa42b95a0d41b87516b4a96e4d5b6668616a408c8792afe32f2de28748f2
+
+    volumes:
+      - ./services/backend/app:/app
+      # - ./services/backend/app:/test
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 5000
+    depends_on:
+      - db
+
+#  frontend:
+#      build: ./services/frontend
+#      # working_dir: /app
+#      volumes:
+#        - ./services/frontend:/usr/src/app
+#        - /usr/src/app/node_modules
+#      ports:
+#        - 8080:8080
+#        - 24678:24678
+
+  queue:
+    # image: rabbitmq:3
+    # Using the below image instead is required to enable the "Broker" tab in the flower UI:
+    image: rabbitmq:3-management
+    #
+    # You also have to change the flower command
+
+#  celeryworker:
+#    volumes:
+#      - ./services/backend/app:/app
+#    # image: '${DOCKER_IMAGE_CELERYWORKER?Variable not set}:${TAG-latest}'
+#    depends_on:
+#      - db
+#      - queue
+#    env_file:
+#      - .env
+#    environment:
+#      - DATABASE_TEST_URL=postgres://postgres:dda73c8802c63a805b43fb7ee5b27ebeaef7aaa5a27d3170f2d8438e2e8d4d4f@db:5432/gschwi-fast-vue-test
+#      - RUN=watchmedo auto-restart --directory=./app/calc/ --pattern=*.py --recursive -- celery -A worker worker -l info -Q main-queue -c 1
+#      # - SMTP_HOST=${SMTP_HOST?Variable not set}
+#    build:
+#      context: ./services/backend
+#      dockerfile: celeryworker.dockerfile
+
+  db:
+    image: postgres
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    environment:
+      # - POSTGRES_USER=postrgress
+      # - POSTGRES_PASSWORD=dda73c8802c63a805b43fb7ee5b27ebeaef7aaa5a27d3170f2d8438e2e8d4d4f
+      - POSTGRES_DB=trans-vib-test
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
