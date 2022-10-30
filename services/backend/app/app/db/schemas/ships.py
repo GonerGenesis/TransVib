@@ -21,7 +21,7 @@ ShipSchemaCreate = pydantic_model_creator(
 )
 
 ShipSchema = pydantic_model_creator(
-    Ship, name=f"{Ship.__name__}Schema", exclude=("author",)
+    Ship, name=f"{Ship.__name__}Schema"
 )
 
     # class ShipSchemaCreate(BaseModel):

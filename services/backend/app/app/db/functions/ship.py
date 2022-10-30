@@ -23,9 +23,12 @@ class CRUDShip(CRUDBase[Ship, ShipSchema, ShipSchemaCreate, UpdateShip]):
 ship = CRUDShip(Ship, ShipSchema)
 
 
-async def create_ship(self, title: str, author: str, description: str = ""):
+async def create_ship(self, title: str, description: str = ""):
     print(locals())
-    obj_in: ShipSchemaCreate = ShipSchemaCreate(**locals())
+    dict_in = locals()
+    dict_in.pop('self')
+    dict_in['author_id'] = 1
+    obj_in: ShipSchemaCreate = ShipSchemaCreate(**dict_in)
     return await ship.create(obj_in)
 
 async def get_ship(self, id: int):

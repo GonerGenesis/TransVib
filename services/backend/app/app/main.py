@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 from app.core.config import get_settings
-from app.schema import graphql_app
+from app.schema.types import graphql_app
 from .db.functions.initialise import init_db
 
 log = logging.getLogger("uvicorn")
