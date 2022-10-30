@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from tortoise.exceptions import IntegrityError
 
-from ..models.models import User
+from ..models import User
 from ...core.security import get_password_hash
 
 
