@@ -1,11 +1,11 @@
 from fastapi import HTTPException
 
-from ..models import Ship
+from ..models import Frame
 from .base import CRUDBase
-from ..schemas.ships import ShipSchema, ShipSchemaCreate, UpdateShip
+from ..schemas.frames import FrameSchema, FrameSchemaCreate, UpdateFrame
 
 
-class CRUDShip(CRUDBase[Ship, ShipSchema, ShipSchemaCreate, UpdateShip]):
+class CRUDFrame(CRUDBase[Frame, FrameSchema, FrameSchemaCreate, UpdateFrame]):
     pass
     # async def create_frame(self, frame_in: FrameSchemaCreate):
     #     frame_obj = await self.create_frame_obj(frame_in)
@@ -20,17 +20,16 @@ class CRUDShip(CRUDBase[Ship, ShipSchema, ShipSchemaCreate, UpdateShip]):
     #     return frame_obj
 
 
-ship = CRUDShip(Ship, ShipSchema)
+frame = CRUDFrame(Frame, FrameSchema)
 
 
-async def create_ship(self, title: str, description: str = ""):
+async def create_frame(self, ship_id: int, frame_pos: float):
     print(locals())
     dict_in = locals()
     dict_in.pop('self')
-    dict_in['author_id'] = 1
-    obj_in: ShipSchemaCreate = ShipSchemaCreate(**dict_in)
-    return await ship.create(obj_in)
+    obj_in: FrameSchemaCreate = FrameSchemaCreate(**dict_in)
+    return await frame.create(obj_in)
 
 
-async def get_ship(self, id: int):
-    return await ship.get(id)
+async def get_frame(self, id: int):
+    return await frame.get(id)

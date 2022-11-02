@@ -1,11 +1,11 @@
 from fastapi import HTTPException
 
-from ..models import Ship
+from ..models import FrameSegment
 from .base import CRUDBase
-from ..schemas.ships import ShipSchema, ShipSchemaCreate, UpdateShip
+from ..schemas.segments import FrameSegmentSchema, FrameSegmentSchemaCreate, UpdateFrameSegment
 
 
-class CRUDShip(CRUDBase[Ship, ShipSchema, ShipSchemaCreate, UpdateShip]):
+class CRUDSegment(CRUDBase[FrameSegment, FrameSegmentSchema, FrameSegmentSchemaCreate, UpdateFrameSegment]):
     pass
     # async def create_frame(self, frame_in: FrameSchemaCreate):
     #     frame_obj = await self.create_frame_obj(frame_in)
@@ -20,17 +20,16 @@ class CRUDShip(CRUDBase[Ship, ShipSchema, ShipSchemaCreate, UpdateShip]):
     #     return frame_obj
 
 
-ship = CRUDShip(Ship, ShipSchema)
+segment = CRUDSegment(FrameSegment, FrameSegmentSchema)
 
 
-async def create_ship(self, title: str, description: str = ""):
+async def create_segment(self, frame_id: int, start_point_id: int, end_point_id: int, thick: float):
     print(locals())
     dict_in = locals()
     dict_in.pop('self')
-    dict_in['author_id'] = 1
-    obj_in: ShipSchemaCreate = ShipSchemaCreate(**dict_in)
-    return await ship.create(obj_in)
+    obj_in: FrameSegmentSchemaCreate = FrameSegmentSchemaCreate(**dict_in)
+    return await segment.create(obj_in)
 
 
-async def get_ship(self, id: int):
-    return await ship.get(id)
+async def get_segment(self, id: int):
+    return await segment.get(id)

@@ -1,6 +1,5 @@
 from tortoise import Tortoise
 
-from .models import User, Ship
-# Frame, FramePoint, FrameSegment, FrameCSValues
+from .models import User, Ship, Note, Frame, FramePoint, FrameSegment, FrameCSValues
 
-Tortoise.init_models(["app.db.models.models"], "models")
+Tortoise.init_models(["app.db.models"], "models")
