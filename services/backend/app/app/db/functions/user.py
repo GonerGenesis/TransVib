@@ -5,7 +5,7 @@ from ..models import User
 from ...core.security import get_password_hash
 
 
-async def create_user(self, username: str, password: str, full_name: str = ""):
+async def create_user(username: str, password: str, full_name: str = ""):
     # print(user)
     hashed_password = get_password_hash(password)
 
@@ -18,5 +18,5 @@ async def create_user(self, username: str, password: str, full_name: str = ""):
     return await user_obj
 
 
-async def get_user_by_id(self, id: int):
+async def get_user_by_id(id: int):
     return await User.get(id=id)
