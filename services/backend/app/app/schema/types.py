@@ -23,7 +23,7 @@ class NoteType:
     modified_at: strawberry.auto
 
 
-#@strawberry.experimental.pydantic.type(model=FrameCSValuesSchema)
+# @strawberry.experimental.pydantic.type(model=FrameCSValuesSchema)
 @strawberry.type
 class FrameCSValuesType:
     frame: 'FrameType'
@@ -55,7 +55,7 @@ class FrameCSValuesType:
     awwm: float
 
 
-#@strawberry.experimental.pydantic.type(model=FramePointSchema)
+# @strawberry.experimental.pydantic.type(model=FramePointSchema)
 @strawberry.type
 class FramePointType:
     id: int
@@ -65,7 +65,7 @@ class FramePointType:
     ends_segments: Optional[List["FrameSegmentType"]]
 
 
-#@strawberry.experimental.pydantic.type(model=FrameSegmentSchema)
+# @strawberry.experimental.pydantic.type(model=FrameSegmentSchema)
 @strawberry.type
 class FrameSegmentType:
     id: int
@@ -74,7 +74,7 @@ class FrameSegmentType:
     thick: float
 
 
-#@strawberry.experimental.pydantic.type(model=FrameSchema)
+# @strawberry.experimental.pydantic.type(model=FrameSchema)
 @strawberry.type
 class FrameType:
     id: int
@@ -84,7 +84,7 @@ class FrameType:
     frame_points: Optional[List["FramePointType"]]
 
 
-#@strawberry.experimental.pydantic.type(model=ShipSchema)
+# @strawberry.experimental.pydantic.type(model=ShipSchema)
 @strawberry.type
 class ShipType:
     id: int
@@ -109,10 +109,12 @@ class UserType:
     ships: Optional[List["ShipType"]]
 
 
-@strawberry.experimental.pydantic.input(model=UserSchemaCreate, all_fields=True)
+# @strawberry.experimental.pydantic.input(model=UserSchemaCreate, all_fields=True)
+@strawberry.input
 class UserInput:
-    pass
-    # username: strawberry.auto
+    username: str
+    full_name: Optional[str] = None
+    password: str
     # full_name: strawberry.auto
     # password: strawberry.auto
     # created_at: datetime
@@ -133,28 +135,24 @@ class Query:
 
     @strawberry.field
     async def get_ship(self, id: int) -> ShipType:
-        ship = await Ship.get(id=id)
-        return await ShipSchema.from_tortoise_orm(ship)
+        return await funcs.ship.get(id=id)
+
+    @strawberry.field
+    async def get_point(self, id: int) -> ShipType:
+        return await funcs.point.get(id=id)
 
 
 @strawberry.type
 class Mutation:
     @strawberry.mutation
     async def create_user(self, user: UserInput) -> UserType:
-        hashed_password = get_password_hash(user.password)
-
-        try:
-            user_obj = await User.create(
-                **{"username": user.username, "full_name": user.full_name, "hashed_password": hashed_password})
-        except IntegrityError:
-            raise HTTPException(status_code=401, detail=f"Sorry, that username already exists.")
-
-        return UserType.from_pydantic(user_obj)
+        user_obj = await funcs.user.create_user(user.username, user.password, user.full_name)
+        return user_obj
 
     @strawberry.mutation
     async def create_ship(self, ship: ShipInput) -> ShipType:
-        obj_in: ShipSchemaCreate = ship.to_pydantic(ShipSchemaCreate)
-        return ShipType.from_pydantic(Ship.create(obj_in))
+        ship_obj = await funcs.ship.create(ship.to_pydantic())
+        return ship_obj
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
