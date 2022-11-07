@@ -7,8 +7,7 @@ from strawberry.fastapi import GraphQLRouter
 from tortoise.exceptions import IntegrityError
 
 from app.core.security import get_password_hash
-from app.db.schemas import ShipSchema, ShipSchemaCreate, UserSchema, UserSchemaCreate, NoteSchema, NoteSchemaCreate, \
-    FrameSchema, FrameCSValuesSchema, FramePointSchema, FrameSegmentSchema
+from app.db.schemas import *
 from app.db.models import User, Ship
 import app.db.functions as funcs
 from app.db.functions.user import get_user_by_id, create_user
@@ -65,6 +64,11 @@ class FramePointType:
     ends_segments: Optional[List["FrameSegmentType"]]
 
 
+@strawberry.experimental.pydantic.input(model=FramePointSchemaCreate, all_fields=True)
+class FramePointInput:
+    pass
+
+
 # @strawberry.experimental.pydantic.type(model=FrameSegmentSchema)
 @strawberry.type
 class FrameSegmentType:
@@ -72,6 +76,11 @@ class FrameSegmentType:
     start_point: 'FramePointType'
     end_point: 'FramePointType'
     thick: float
+
+
+@strawberry.experimental.pydantic.input(model=FrameSegmentSchemaCreate, all_fields=True)
+class FrameSegmentInput:
+    pass
 
 
 # @strawberry.experimental.pydantic.type(model=FrameSchema)
@@ -82,6 +91,11 @@ class FrameType:
     cs_values: Optional["FrameCSValuesType"]
     frame_segments: Optional[List["FrameSegmentType"]]
     frame_points: Optional[List["FramePointType"]]
+
+
+@strawberry.experimental.pydantic.input(model=FrameSchemaCreate, all_fields=True)
+class FrameInput:
+    pass
 
 
 # @strawberry.experimental.pydantic.type(model=ShipSchema)
@@ -138,7 +152,11 @@ class Query:
         return await funcs.ship.get(id=id)
 
     @strawberry.field
-    async def get_point(self, id: int) -> ShipType:
+    async def get_point(self, id: int) -> FramePointType:
+        return await funcs.point.get(id=id)
+
+    @strawberry.field
+    async def get_frame(self, id: int) -> FrameType:
         return await funcs.point.get(id=id)
 
 
@@ -153,6 +171,21 @@ class Mutation:
     async def create_ship(self, ship: ShipInput) -> ShipType:
         ship_obj = await funcs.ship.create(ship.to_pydantic())
         return ship_obj
+
+    @strawberry.mutation
+    async def create_point(self, point: FramePointInput) -> FramePointType:
+        point_obj = await funcs.point.create(point.to_pydantic())
+        return point_obj
+
+    @strawberry.mutation
+    async def create_frame(self, frame: FrameInput) -> FrameType:
+        frame_obj = await funcs.frame.create(frame.to_pydantic())
+        return frame_obj
+
+    @strawberry.mutation
+    async def create_segment(self, frame: FrameSegmentInput) -> FrameSegmentType:
+        segment_obj = await funcs.segment.create(frame.to_pydantic())
+        return segment_obj
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
