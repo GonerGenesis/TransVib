@@ -1,9 +1,15 @@
 from datetime import datetime
+from http.client import NOT_FOUND
 from typing import Optional, List
+from fastapi import Request
 
 import strawberry
 from fastapi import HTTPException
 from strawberry.fastapi import GraphQLRouter
+from strawberry.http import GraphQLHTTPResponse
+from strawberry.types import ExecutionResult
+from graphql.error.graphql_error import format_error as format_graphql_error
+from tortoise.contrib.pydantic import PydanticModel
 from tortoise.exceptions import IntegrityError
 
 from app.core.security import get_password_hash
@@ -22,7 +28,18 @@ class NoteType:
     modified_at: strawberry.auto
 
 
-# @strawberry.experimental.pydantic.type(model=FrameCSValuesSchema)
+@strawberry.input
+class PointInput:
+    y: float
+    z: float
+
+
+@strawberry.type()
+class PointType:
+    y: float
+    z: float
+
+
 @strawberry.type
 class FrameCSValuesType:
     frame: 'FrameType'
@@ -30,7 +47,7 @@ class FrameCSValuesType:
     modified_at: datetime
     # y = fields.DecimalField(max_digits=9, decimal_places=3)
     # z = fields.DecimalField(max_digits=9, decimal_places=3)
-    center: tuple[float, float]
+    center: 'PointType'
     area: float
     aqy: float
     aqz: float
@@ -49,7 +66,36 @@ class FrameCSValuesType:
     ir2: float
     # shear_y = fields.DecimalField(max_digits=9, decimal_places=3)
     # shear_z = fields.DecimalField(max_digits=9, decimal_places=3)
-    shear_center: tuple[float, float]
+    shear_center: 'PointType'
+    it: float
+    awwm: float
+
+
+@strawberry.input
+class FrameCSValuesInput:
+    frame_id: int
+    # y = fields.DecimalField(max_digits=9, decimal_places=3)
+    # z = fields.DecimalField(max_digits=9, decimal_places=3)
+    center: 'PointInput'
+    area: float
+    aqy: float
+    aqz: float
+    ay: float
+    az: float
+    ayy: float
+    azz: float
+    ayz: float
+    ayys: float
+    azzs: float
+    ayzs: float
+    phi: float
+    i1: float
+    i2: float
+    ir1: float
+    ir2: float
+    # shear_y = fields.DecimalField(max_digits=9, decimal_places=3)
+    # shear_z = fields.DecimalField(max_digits=9, decimal_places=3)
+    shear_center: 'PointInput'
     it: float
     awwm: float
 
@@ -152,12 +198,29 @@ class Query:
         return await funcs.ship.get(id=id)
 
     @strawberry.field
+    async def get_frame(self, id: int) -> FrameType:
+        return await funcs.point.get(id=id)
+
+    @strawberry.field
+    async def get_segment(self, id: int) -> FrameSegmentType:
+        return await funcs.segment.get(id=id)
+
+    @strawberry.field
     async def get_point(self, id: int) -> FramePointType:
         return await funcs.point.get(id=id)
 
     @strawberry.field
-    async def get_frame(self, id: int) -> FrameType:
-        return await funcs.point.get(id=id)
+    async def get_cs_values(self, id: int) -> FrameCSValuesType:
+        from app.db.models import FrameCSValues
+        model = await FrameCSValues.filter(frame_id=id).first()
+
+        if not model:
+            raise Exception("item not found")
+
+        if issubclass(FrameCSValuesSchema, PydanticModel):
+            return await FrameCSValuesSchema.from_tortoise_orm(model)
+        return model
+        # return await funcs.csvalues.get(frame_id=id)
 
 
 @strawberry.type
@@ -173,20 +236,40 @@ class Mutation:
         return ship_obj
 
     @strawberry.mutation
-    async def create_point(self, point: FramePointInput) -> FramePointType:
-        point_obj = await funcs.point.create(point.to_pydantic())
-        return point_obj
-
-    @strawberry.mutation
     async def create_frame(self, frame: FrameInput) -> FrameType:
         frame_obj = await funcs.frame.create(frame.to_pydantic())
         return frame_obj
 
     @strawberry.mutation
-    async def create_segment(self, frame: FrameSegmentInput) -> FrameSegmentType:
-        segment_obj = await funcs.segment.create(frame.to_pydantic())
+    async def create_segment(self, segment: FrameSegmentInput) -> FrameSegmentType:
+        segment_obj = await funcs.segment.create(segment.to_pydantic())
         return segment_obj
+
+    @strawberry.mutation
+    async def create_point(self, point: FramePointInput) -> FramePointType:
+        point_obj = await funcs.point.create(point.to_pydantic())
+        return point_obj
+
+    @strawberry.mutation
+    async def create_cs_values(self, cs_values: FrameCSValuesInput) -> FrameCSValuesType:
+        cs_values_obj = await funcs.csvalues.create(cs_values)
+        return cs_values_obj
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
+
+
+class MyGraphQLRouter(GraphQLRouter):
+
+    async def process_result(
+            self, request: Request, result: ExecutionResult
+    ) -> GraphQLHTTPResponse:
+        data: GraphQLHTTPResponse = {"data": result.data}
+
+        if result.errors:
+            data["errors"] = [format_graphql_error(err) for err in result.errors]
+
+        return data
+
+
 graphql_app = GraphQLRouter(schema)

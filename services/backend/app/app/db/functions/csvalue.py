@@ -2,10 +2,10 @@ from fastapi import HTTPException
 
 from ..models import FrameCSValues
 from .base import CRUDBase
-from ..schemas.csvalues import FrameCSValuesSchema, FrameCSValuesSchemaCreate, UpdateFrameCSValues
+from ..schemas.csvalues import FrameCSValuesSchema, FrameCSValuesSchemaCreate, FrameCSValuesSchemaUpdate
 
 
-class CRUDFrameCSValues(CRUDBase[FrameCSValues, FrameCSValuesSchema, FrameCSValuesSchemaCreate, UpdateFrameCSValues]):
+class CRUDFrameCSValues(CRUDBase[FrameCSValues, FrameCSValuesSchema, FrameCSValuesSchemaCreate, FrameCSValuesSchemaUpdate]):
     pass
     # async def create_csvalues(self, csvalues_in: FrameCSValuesSchemaCreate):
     #     csvalues_obj = await self.create_csvalues_obj(csvalues_in)

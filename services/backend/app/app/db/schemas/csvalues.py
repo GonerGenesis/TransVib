@@ -75,7 +75,7 @@ class FrameCSValuesSchemaUpdate(BaseModel):
 #     id: Optional[int]
 #     modified_at: Optional[datetime]
 FrameCSValuesSchemaCreate = pydantic_model_creator(
-    FrameCSValues, name=f"{FrameCSValues.__name__}SchemaCreate", exclude=("frame", "created_at", "modified_at"),
+    FrameCSValues, name=f"{FrameCSValues.__name__}SchemaCreate",  exclude_readonly=True,
 )
 
 # FrameCSValuesSchemaUpdate = pydantic_model_creator(
@@ -83,5 +83,5 @@ FrameCSValuesSchemaCreate = pydantic_model_creator(
 # )
 
 FrameCSValuesSchema = pydantic_model_creator(
-    FrameCSValues, name=f"{FrameCSValues.__name__}Schema", exclude=("frame",)
+    FrameCSValues, name=f"{FrameCSValues.__name__}Schema",
 )
