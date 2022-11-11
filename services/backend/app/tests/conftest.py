@@ -40,15 +40,17 @@ def test_app():
 
 @pytest.fixture(scope="session")
 @pytest.mark.asyncio
-async def test_app_with_db(event_loop):
+async def test_app_with_db():
     # set up
     print(event_loop)
+    print("blub")
     app = create_application()
     app.dependency_overrides[get_settings] = get_settings_override
     # db_url = os.environ.get("DATABASE_TEST_URL")
     # initializer(["app.database.models"], db_url=db_url, app_label="models")
-    async with AsyncClient(app=app, base_url="http://0.0.0.1:5000") as test_client:
-        # testing
+    async with AsyncClient(app=app, base_url="http://0.0.0.0:5000") as test_client:
+        print(await test_client.get())
+        #print(test_client.base_url)
         yield test_client
 
 
@@ -57,7 +59,7 @@ async def test_app_with_db(event_loop):
 async def set_initial_data(request, event_loop):
     db_url = os.environ.get("DATABASE_TEST_URL")
     # new_loop = asyncio.new_event_loop()
-    initializer(["app.database.models"], db_url=db_url, app_label="models", loop=event_loop)
+    initializer(["app.db.models.models"], db_url=db_url, loop=event_loop)
     # env_initializer()
     user = UserSchemaCreate(username=os.environ.get("FIRST_SUPERUSER"), full_name="Administrator",
                             password=os.environ.get("FIRST_SUPERUSER_PASSWORD"))
@@ -114,6 +116,7 @@ def event_loop():
     except RuntimeError as ex:
         print("Exception:", str(ex))
         if "no running event loop" in str(ex):
+            print("start ne loop")
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             yield loop

@@ -227,7 +227,8 @@ class Query:
 class Mutation:
     @strawberry.mutation
     async def create_user(self, user: UserInput) -> UserType:
-        user_obj = await funcs.user.create_user(user.username, user.password, user.full_name)
+        user = UserSchemaCreate(username= user.username, full_name = user.full_name, password = user.password)
+        user_obj = await funcs.user.create_user(user)
         return user_obj
 
     @strawberry.mutation
