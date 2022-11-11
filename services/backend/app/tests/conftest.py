@@ -47,7 +47,7 @@ async def test_app_with_db(event_loop):
     app.dependency_overrides[get_settings] = get_settings_override
     # db_url = os.environ.get("DATABASE_TEST_URL")
     # initializer(["app.database.models"], db_url=db_url, app_label="models")
-    async with AsyncClient(app=app, base_url="http://0.0.0.0:5000") as test_client:
+    async with AsyncClient(app=app, base_url="http://0.0.0.1:5000") as test_client:
         # testing
         yield test_client
 
