@@ -5,13 +5,16 @@ import pytest
 import nest_asyncio
 
 from starlette.testclient import TestClient
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 
+from gql import Client
 from tortoise.contrib.test import finalizer, initializer
+from tortoise import connections, Tortoise
 
 from typing import Dict
 
 from app.core.config import get_settings, Settings
+from app.db.functions.initialise import TORTOISE_ORM
 from app.main import create_application
 from app.db.models import Ship, Frame, FramePoint, FrameSegment, FrameCSValues
 from app.db.schemas import UserSchemaCreate
@@ -26,52 +29,57 @@ def get_settings_override():
     return Settings(testing=1, database_url=os.environ.get("DATABASE_TEST_URL"))
 
 
-@pytest.fixture(scope="module")
-def test_app():
+@pytest.fixture(scope="session")
+async def test_app():
     # set up
     app = create_application()
     app.dependency_overrides[get_settings] = get_settings_override
-    with TestClient(app) as test_client:
-        # testing
-        yield test_client
+
 
     # tear down
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 @pytest.mark.asyncio
-async def test_app_with_db():
+async def test_app_with_db(request, event_loop):
     # set up
     print(event_loop)
     print("blub")
     app = create_application()
     app.dependency_overrides[get_settings] = get_settings_override
-    # db_url = os.environ.get("DATABASE_TEST_URL")
-    # initializer(["app.database.models"], db_url=db_url, app_label="models")
-    async with AsyncClient(app=app, base_url="http://0.0.0.0:5000") as test_client:
-        print(await test_client.get())
+    db_url = os.environ.get("DATABASE_TEST_URL")
+    initializer(["app.db.models.models"], db_url=db_url, app_label="models", loop=event_loop)
+    request.addfinalizer(finalizer)
+    yield app
+
+@pytest.fixture(scope="module")
+async def http_client(test_app_with_db):
+    async with AsyncClient(app=test_app_with_db, base_url="http://test") as test_client:
+        print(await test_client.get(url="/"))
         #print(test_client.base_url)
         yield test_client
 
 
 @pytest.fixture(scope="session", autouse=True)
-@pytest.mark.asyncio
-async def set_initial_data(request, event_loop):
+# @pytest.mark.asyncio
+async def set_initial_data(test_app_with_db):
     db_url = os.environ.get("DATABASE_TEST_URL")
     # new_loop = asyncio.new_event_loop()
-    initializer(["app.db.models.models"], db_url=db_url, loop=event_loop)
+    print(db_url)
+    await Tortoise.init(db_url=db_url, modules={"models": ["app.db.models.models"]})
+    print("connections:", connections.db_config.items())
     # env_initializer()
     user = UserSchemaCreate(username=os.environ.get("FIRST_SUPERUSER"), full_name="Administrator",
                             password=os.environ.get("FIRST_SUPERUSER_PASSWORD"))
     # test_app_with_db.post("/register", json=json)
     # hashed_password = get_password_hash(user.password)
     user = await functions.user.create_user(user)
-    frame = await Frame()
-    segments = await FrameSegment()
-    point = await FramePoint()
-    # await frame.fetch_related("cs_values", "frame_segments", "frame_points")
-    request.addfinalizer(finalizer)
+    # frame = await Frame()
+    # segments = await FrameSegment()
+    # point = await FramePoint()
     yield user
+    await connections.close_all()
+    # await frame.fetch_related("cs_values", "frame_segments", "frame_points")
     # finalizer()
 
 

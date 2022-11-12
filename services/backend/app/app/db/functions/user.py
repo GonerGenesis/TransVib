@@ -12,7 +12,6 @@ async def create_user(user: UserSchemaCreate):
     hashed_password = get_password_hash(user.password)
 
     try:
-        print(connections.)
         user_obj = await User.create(
             **{"username": user.username, "full_name": user.full_name, "hashed_password": hashed_password})
     except IntegrityError:
