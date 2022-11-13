@@ -9,9 +9,18 @@ from tortoise.contrib import test
 #pytestmark = pytest.mark.asyncio
 
 
-# async def test_empty_user(test_app_with_db)
+async def test_empty_user(http_client):
+    mutation = 'mutation CreateUser { createUser(user: {username: "", fullName: "", password: ""}){username fullName}}'
+    payload = {"query": mutation}
 
-@pytest.mark.asyncio
+    response = await http_client.post("/graphql", json=payload)
+    print(response.status_code)
+    json = response.json()
+    print('test empty user',json)
+
+    assert json["errors"] is not None
+
+
 async def test_create_user(http_client):
     # transport = AIOHTTPTransport(url="http://0.0.0.0:5000/graphql")
     # client = Client(transport=transport, fetch_schema_from_transport=True)
@@ -21,14 +30,7 @@ async def test_create_user(http_client):
     payload = {"query": mutation}
 
     response = await http_client.post("/graphql", json=payload)
-    # test_request_payload = {"username": "geemo", "full_name": "GK", "password": "kaymo"}
-    # test_response_payload = {"id": 1, "username": "gee", "full_name": "GK"}
-
-    # async def mock_post(payload):
-    #     return 1
-    #
-    # monkeypatch.setattr(users, "create_user", mock_post)
     json = response.json()
-    print(json)
+    print('test create user', json)
 
     assert json["data"]["createUser"]["username"] == "geemo"
