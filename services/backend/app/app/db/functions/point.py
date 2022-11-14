@@ -23,13 +23,13 @@ class CRUDPoint(CRUDBase[FramePoint, FramePointSchema, FramePointSchemaCreate, U
 point = CRUDPoint(FramePoint, FramePointSchema)
 
 
-async def create_point(self, frame_id: int, y: float, z: float):
-    print(locals())
-    dict_in = locals()
-    dict_in.pop('self')
-    obj_in: FramePointSchemaCreate = FramePointSchemaCreate(**dict_in)
-    return await point.create(obj_in)
-
-
-async def get_point(self, id: int):
-    return await point.get(id)
+# async def create_point(self, frame_id: int, y: float, z: float):
+#     print(locals())
+#     dict_in = locals()
+#     dict_in.pop('self')
+#     obj_in: FramePointSchemaCreate = FramePointSchemaCreate(**dict_in)
+#     return await point.create(obj_in)
+#
+#
+# async def get_point(self, id: int):
+#     return await point.get(id)

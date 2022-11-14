@@ -35,7 +35,6 @@ async def test_app():
     app = create_application()
     app.dependency_overrides[get_settings] = get_settings_override
 
-
     # tear down
 
 
@@ -52,11 +51,12 @@ async def test_app_with_db(request, event_loop):
     request.addfinalizer(finalizer)
     yield app
 
-@pytest.fixture(scope="module")
+
+@pytest.fixture(scope="session")
 async def http_client(test_app_with_db):
     async with AsyncClient(app=test_app_with_db, base_url="http://test") as test_client:
         print(await test_client.get(url="/"))
-        #print(test_client.base_url)
+        # print(test_client.base_url)
         yield test_client
 
 

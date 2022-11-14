@@ -19,6 +19,18 @@ class UserSchemaCreate(BaseModel):
         return v
 
 
+class UserSchemaUpdate(BaseModel):
+    username: Optional[str]
+    full_name: Optional[str]
+
+    @validator('username', 'full_name')
+    def field_not_empty(cls, v):
+        # print(v)
+        if v == '':
+            raise ValueError('field doesn\'t accept empty string')
+        return v
+
+
 UserSchema = pydantic_model_creator(
     User, name=f"{User.__name__}Schema", exclude=["hashed_password", "created_at", "modified_at"]
 )
