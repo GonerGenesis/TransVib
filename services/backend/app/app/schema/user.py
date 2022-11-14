@@ -3,7 +3,8 @@ from typing import Optional, List, Annotated, TYPE_CHECKING
 import strawberry
 from strawberry import UNSET
 
-from ..db.schemas import UserSchemaCreate, UserSchemaUpdate
+from ..db.models import User
+from ..db.schemas import UserSchemaCreate, UserSchemaUpdate, UserSchema
 from ..db import functions as funcs
 
 if TYPE_CHECKING:
@@ -45,11 +46,14 @@ async def update_user(self, user: UserUpdate) -> UserType:
     dict_in = user.__dict__
     id = dict_in.pop('user_id')
     print(dict_in)
-    print({key: val for key, val in dict_in if val is not UNSET})
-    obj_in = UserSchemaUpdate({key: val for key, val in dict_in if val is not UNSET})
-    print(obj_in.dict())
-    await self.model.filter(id=id).update(**obj_in.dict(exclude_unset=True))
-    return await self.schema.from_queryset_single(self.model.get(id=id))
+    dict_in = {key: val for (key, val) in dict_in.items() if val is not UNSET}
+    print(dict_in)
+    #obj_in = UserSchemaUpdate({key: val for key, val in dict_in if val is not UNSET})
+    #obj_in = UserSchemaUpdate(username=user.username, full_name=user.full_name)
+    obj_in = UserSchemaUpdate(**dict_in)
+    print(obj_in.dict(exclude_unset=True))
+    await User.filter(id=id).update(**obj_in.dict(exclude_unset=True))
+    return await UserSchema.from_queryset_single(User.get(id=id))
 
 
 @strawberry.field

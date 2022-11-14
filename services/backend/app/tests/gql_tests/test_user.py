@@ -70,4 +70,4 @@ async def test_update_user(http_client):
     json = response.json()
     print('test create user', json)
 
-    assert json["data"]["updateUser"]["full_name"] == "knickerbocker"
+    assert json["data"]["updateUser"]["fullName"] == "knickerbocker"
