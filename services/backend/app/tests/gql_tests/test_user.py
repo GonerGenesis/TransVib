@@ -6,11 +6,12 @@ from httpx import ASGITransport
 
 from tortoise.contrib import test
 
-#pytestmark = pytest.mark.asyncio
+
+# pytestmark = pytest.mark.asyncio
 
 
 async def test_empty_user(http_client):
-    mutation = 'mutation CreateUser { createUser(user: {username: "", fullName: "", password: ""}){username fullName}}'
+    mutation = 'mutation CreateUser { createUser(user: {username: " ", fullName: "", password: ""}){username fullName}}'
     payload = {"query": mutation}
 
     response = await http_client.post("/graphql", json=payload)
@@ -19,6 +20,7 @@ async def test_empty_user(http_client):
     print('test empty user', json)
 
     assert json["errors"] is not None
+    assert "empty" in json["errors"][0]['message']
 
 
 async def test_create_user(http_client):
@@ -49,17 +51,16 @@ async def test_get_user(http_client):
     payload = {"query": query}
     response = await http_client.post("/graphql", json=payload)
     json = response.json()
-    print('test create user', json)
+    print('test get user', json)
 
     assert json["data"]["getUser"]["username"] == "admin@gschwifast.com"
     assert json["data"]["getUser"]["id"] == 1
 
 
-
 async def test_update_user(http_client):
     mutation = """
         mutation UpdateUser {
-            updateUser(user: {userId: 1, fullName: "knickerbocker"}){ 
+            updateUser(userId: 1, user: {fullName: "knickerbocker"}){ 
                fullName
             }
         }
@@ -68,6 +69,25 @@ async def test_update_user(http_client):
 
     response = await http_client.post("/graphql", json=payload)
     json = response.json()
-    print('test create user', json)
+    print('test update user', json)
 
     assert json["data"]["updateUser"]["fullName"] == "knickerbocker"
+
+
+async def test_delete_user(http_client):
+    mutation = """
+            mutation DeleteUser {
+                deleteUser(id: 2){
+                    id
+                    msg
+                    type 
+                }
+            }
+        """
+    payload = {"query": mutation}
+
+    response = await http_client.post("/graphql", json=payload)
+    json = response.json()
+    print('test delete user', json)
+
+    assert json["data"]["deleteUser"]["msg"] == "Deleted User 2"

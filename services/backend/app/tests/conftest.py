@@ -73,7 +73,7 @@ async def set_initial_data(test_app_with_db):
                             password=os.environ.get("FIRST_SUPERUSER_PASSWORD"))
     # test_app_with_db.post("/register", json=json)
     # hashed_password = get_password_hash(user.password)
-    user = await functions.user.create_user(user)
+    user = await functions.user.create(user)
     # frame = await Frame()
     # segments = await FrameSegment()
     # point = await FramePoint()

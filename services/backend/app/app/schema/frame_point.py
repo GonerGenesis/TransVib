@@ -1,19 +1,20 @@
+import decimal
 from typing import Optional, List, Annotated, TYPE_CHECKING
 
 import strawberry
 
-from ..db.schemas import FramePointSchemaCreate
+from ..db.schemas import FramePointSchemaCreate, FramePointSchema
 from ..db import functions as funcs
 
 if TYPE_CHECKING:
     from .frame_segment import FrameSegmentType
 
 
-@strawberry.type
+@strawberry.experimental.pydantic.type(model=FramePointSchema)
 class FramePointType:
     id: int
-    y: float
-    z: float
+    y: decimal.Decimal
+    z: decimal.Decimal
     starts_segments: List[Annotated["FrameSegmentType", strawberry.lazy('.frame_segment')]]
     ends_segments: List[Annotated["FrameSegmentType", strawberry.lazy('.frame_segment')]]
 

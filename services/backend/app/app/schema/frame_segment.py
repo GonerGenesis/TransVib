@@ -1,14 +1,14 @@
 from typing import Annotated, TYPE_CHECKING
 import strawberry
 
-from ..db.schemas import FrameSegmentSchemaCreate
+from ..db.schemas import FrameSegmentSchemaCreate, FrameSegmentSchema
 from ..db import functions as funcs
 
 if TYPE_CHECKING:
     from .frame_point import FramePointType
 
 
-@strawberry.type
+@strawberry.experimental.pydantic.type(model=FrameSegmentSchema)
 class FrameSegmentType:
     id: int
     start_point: Annotated['FramePointType', strawberry.lazy('.frame_point')]
