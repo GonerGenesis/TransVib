@@ -103,6 +103,17 @@ async def create_test_frame(create_test_ship):
     yield frame
     await Frame.filter(id=frame.id).delete()
 
+# @pytest.fixture(scope="module")
+# @pytest.mark.asyncio
+# async def create_test_point(create_test_frame):
+#     y = random_pos()
+#     z = random_pos()
+#     point = await FramePoint.create(**{"y": y, "z": z, "frame_id": create_test_frame.id})
+#     # frame = await FrameSchema.from_tortoise_orm(frame)
+#     print(point)
+#     yield point
+#     await FramePoint.filter(id=point.id).delete()
+
 
 @pytest.fixture(scope="module")
 @pytest.mark.asyncio

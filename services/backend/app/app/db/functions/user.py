@@ -9,7 +9,7 @@ from ...core.security import get_password_hash
 
 
 class CRUDUser(CRUDBase[User, UserSchema, UserSchemaCreate, UserSchemaUpdate]):
-    async def create(self, user: UserSchemaCreate):
+    async def create(self, user: UserSchemaCreate) -> UserSchema:
         hashed_password = get_password_hash(user.password)
 
         try:
@@ -18,7 +18,7 @@ class CRUDUser(CRUDBase[User, UserSchema, UserSchemaCreate, UserSchemaUpdate]):
         except IntegrityError:
             raise HTTPException(status_code=401, detail=f"Sorry, that username already exists.")
 
-        return await user_obj
+        return await UserSchema.from_tortoise_orm(user_obj)
 
 
 user = CRUDUser(User, UserSchema)

@@ -2,7 +2,7 @@ from typing import Optional, List, TYPE_CHECKING, Annotated
 
 import strawberry
 
-from ..db.schemas import ShipSchemaCreate
+from ..db.schemas import ShipSchemaCreate, ShipSchema
 from ..db import functions as funcs
 
 if TYPE_CHECKING:
@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 
 @strawberry.type
+@strawberry.experimental.pydantic.type(model=ShipSchema)
 class ShipType:
     id: int
     title: str
@@ -26,10 +27,10 @@ class ShipInput:
 
 @strawberry.field
 async def get_ship(self, id: int) -> ShipType:
-    return await funcs.ship.get(id=id)
+    return ShipType.from_pydantic(await funcs.ship.get(id=id))
 
 
 @strawberry.mutation
 async def create_ship(self, ship: ShipInput) -> ShipType:
-    ship_obj = await funcs.ship.create(ship.to_pydantic())
-    return ship_obj
+    ship_obj: ShipSchema = await funcs.ship.create(ship.to_pydantic())
+    return ShipType.from_pydantic(ship_obj)

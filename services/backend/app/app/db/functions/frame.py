@@ -23,13 +23,13 @@ class CRUDFrame(CRUDBase[Frame, FrameSchema, FrameSchemaCreate, UpdateFrame]):
 frame = CRUDFrame(Frame, FrameSchema)
 
 
-async def create_frame(self, ship_id: int, frame_pos: float):
-    print(locals())
-    dict_in = locals()
-    dict_in.pop('self')
-    obj_in: FrameSchemaCreate = FrameSchemaCreate(**dict_in)
-    return await frame.create(obj_in)
-
-
-async def get_frame(self, id: int):
-    return await frame.get(id)
+# async def create_frame(self, ship_id: int, frame_pos: float):
+#     print(locals())
+#     dict_in = locals()
+#     dict_in.pop('self')
+#     obj_in: FrameSchemaCreate = FrameSchemaCreate(**dict_in)
+#     return await frame.create(obj_in)
+#
+#
+# async def get_frame(self, id: int):
+#     return await frame.get(id)

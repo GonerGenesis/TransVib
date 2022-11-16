@@ -32,7 +32,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         self.model = model
         self.schema = schema
 
-    async def create(self, obj_in: CreateSchemaType):
+    async def create(self, obj_in: CreateSchemaType) -> SchemaType:
         obj = await self._create_obj(obj_in)
         return await self.schema.from_tortoise_orm(await obj)
 
@@ -52,7 +52,7 @@ class CRUDBase(Generic[ModelType, SchemaType, CreateSchemaType, UpdateSchemaType
         return await self.schema.from_tortoise_orm(obj)
 
     async def update(self, id: Any, obj_in: UpdateSchemaType) -> Optional[SchemaType]:
-        await self.model.filter(id=id).update(**obj_in.dict(exclude_unset=True))
+        await self.model.filter(id=id).update(**obj_in.dict(exclude_unset=True, exclude_none=True))
         return await self.schema.from_queryset_single(self.model.get(id=id))
 
     async def delete(self, id: Any) -> Optional[Msg]:
