@@ -8,7 +8,8 @@ if TYPE_CHECKING:
     from .frame_point import FramePointType
 
 
-@strawberry.experimental.pydantic.type(model=FrameSegmentSchema)
+#@strawberry.experimental.pydantic.type(model=FrameSegmentSchema)
+@strawberry.type
 class FrameSegmentType:
     id: int
     start_point: Annotated['FramePointType', strawberry.lazy('.frame_point')]

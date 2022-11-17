@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from app.schema.user import UserType
 
 
-@strawberry.type
+#@strawberry.type
 @strawberry.experimental.pydantic.type(model=ShipSchema)
 class ShipType:
     id: int

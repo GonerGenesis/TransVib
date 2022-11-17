@@ -11,7 +11,8 @@ if TYPE_CHECKING:
     from .frame import FrameType
 
 
-@strawberry.experimental.pydantic.type(model=FramePointSchema)
+#@strawberry.experimental.pydantic.type(model=FramePointSchema)
+@strawberry.type
 class FramePointType:
     id: int
     y: decimal.Decimal
@@ -34,4 +35,4 @@ async def get_point(self, id: int) -> FramePointType:
 @strawberry.mutation
 async def create_point(self, point: FramePointInput) -> FramePointType:
     point_obj = await funcs.point.create(point.to_pydantic())
-    return FramePointType.from_pydantic(point_obj)
+    return point_obj

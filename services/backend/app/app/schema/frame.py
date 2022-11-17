@@ -11,10 +11,11 @@ if TYPE_CHECKING:
     from .frame_segment import FrameSegmentType
 
 
-@strawberry.experimental.pydantic.type(model=FrameSchema)
+#@strawberry.experimental.pydantic.type(model=FrameSchema)
+@strawberry.type
 class FrameType:
-    id: strawberry.auto
-    frame_pos: strawberry.auto
+    id: int
+    frame_pos: float
     cs_values: Annotated["FrameCSValuesType", strawberry.lazy(".frame_csvalues")]
     frame_segments: List[Annotated["FrameSegmentType", strawberry.lazy(".frame_segment")]]
     frame_points: List[Annotated["FramePointType", strawberry.lazy(".frame_point")]]

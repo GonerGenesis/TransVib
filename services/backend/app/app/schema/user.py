@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from .note import NoteType
 
 
-#@strawberry.experimental.pydantic.type(model=UserSchema)
-@strawberry.type
+@strawberry.experimental.pydantic.type(model=UserSchema)
+#@strawberry.type
 class UserType:
     id: int
     username: str
