@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from .frame_csvalues import FrameCSValuesType
     from .frame_point import FramePointType
     from .frame_segment import FrameSegmentType
+    from .ship import ShipType
 
 
 #@strawberry.experimental.pydantic.type(model=FrameSchema)
@@ -19,6 +20,7 @@ class FrameType:
     cs_values: Annotated["FrameCSValuesType", strawberry.lazy(".frame_csvalues")]
     frame_segments: List[Annotated["FrameSegmentType", strawberry.lazy(".frame_segment")]]
     frame_points: List[Annotated["FramePointType", strawberry.lazy(".frame_point")]]
+    ship: Annotated["ShipType", strawberry.lazy('.ship')]
 
 
 @strawberry.experimental.pydantic.input(model=FrameSchemaCreate, all_fields=True)
@@ -27,7 +29,7 @@ class FrameInput:
 
 @strawberry.field
 async def get_frame(self, id: int) -> FrameType:
-    return await funcs.point.get(id=id)
+    return await funcs.frame.get(id=id)
 
 @strawberry.mutation
 async def create_frame(self, frame: FrameInput) -> FrameType:

@@ -24,5 +24,5 @@ FrameSchemaCreate = pydantic_model_creator(
 )
 
 FrameSchema = pydantic_model_creator(
-    Frame, name=f"{Frame.__name__}Schema", exclude=("ship",)
+    Frame, name=f"{Frame.__name__}Schema",
 )

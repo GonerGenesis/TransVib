@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from .note import NoteType
 
 
-@strawberry.experimental.pydantic.type(model=UserSchema)
-#@strawberry.type
+#@strawberry.experimental.pydantic.type(model=UserSchema)
+@strawberry.type
 class UserType:
     id: int
     username: str
@@ -46,7 +46,7 @@ async def create_user(self, user: UserInput) -> UserType:
     user = user.to_pydantic()
     user_obj = await funcs.user.create(user)
     print(user_obj.dict())
-    return UserType.from_pydantic(user_obj)
+    return user_obj
 
 @strawberry.mutation
 async def update_user(self, user_id: int, user: UserUpdate) -> UserType:

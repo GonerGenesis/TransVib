@@ -20,7 +20,7 @@ from app.db.models import Ship, Frame, FramePoint, FrameSegment, FrameCSValues
 from app.db.schemas import UserSchemaCreate
 from app.db import functions
 
-from tests.utils.utils import get_superuser_token_headers, random_pos, random_ship, random_frame
+from tests.utils.utils import get_superuser_token_headers, random_pos, random_ship, random_frame, random_point
 
 nest_asyncio.apply()
 
@@ -141,6 +141,17 @@ def event_loop():
             yield loop
     loop.close()
 
+
+@pytest.fixture(scope="module")
+async def random_setup():
+    ship = await random_ship(1)
+    frame = await random_frame(ship.id)
+    point_1 = await random_point(frame.id)
+    point_2 = await random_point(frame.id)
+    segment = await FrameSegment.create(frame_id=frame.id, start_point_id=point_1.id,
+                                        end_point_id=point_2.id,
+                                        thick=0.02)
+    return {'ship': ship, 'frame': frame, 'p1': point_1, 'p2':point_2, 'segment': segment}
 
 async def create_geometry() -> int:
     ship = await random_ship(1)
