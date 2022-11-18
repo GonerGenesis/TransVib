@@ -3,7 +3,8 @@ from typing import Optional, List, Annotated, TYPE_CHECKING
 
 import strawberry
 
-from ..db.schemas import FramePointSchemaCreate, FramePointSchema
+from .msg import MsgType
+from ..db.schemas import FramePointSchemaCreate, FramePointSchema, UpdateFramePoint
 from ..db import functions as funcs
 
 if TYPE_CHECKING:
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
     from .frame import FrameType
 
 
-#@strawberry.experimental.pydantic.type(model=FramePointSchema)
+# @strawberry.experimental.pydantic.type(model=FramePointSchema)
 @strawberry.type
 class FramePointType:
     id: int
@@ -27,6 +28,11 @@ class FramePointInput:
     pass
 
 
+@strawberry.experimental.pydantic.input(model=UpdateFramePoint, all_fields=True)
+class FramePointUpdate:
+    pass
+
+
 @strawberry.field
 async def get_point(self, id: int) -> FramePointType:
     return await funcs.point.get(id=id)
@@ -36,3 +42,15 @@ async def get_point(self, id: int) -> FramePointType:
 async def create_point(self, point: FramePointInput) -> FramePointType:
     point_obj = await funcs.point.create(point.to_pydantic())
     return point_obj
+
+
+@strawberry.mutation
+async def update_point(self, point_id: int, point: FramePointUpdate) -> FramePointType:
+    obj_in: UpdateFramePoint = point.to_pydantic()
+    user: FramePointSchema = await funcs.point.update(id=point_id, obj_in=obj_in)
+    return user
+
+
+@strawberry.mutation
+async def delete_point(self, id: int) -> MsgType:
+    return await funcs.point.delete(id=id)

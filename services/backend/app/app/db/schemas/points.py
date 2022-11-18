@@ -1,3 +1,4 @@
+import decimal
 from typing import Optional
 
 from pydantic import BaseModel
@@ -7,8 +8,8 @@ from ..models import FramePoint
 
 
 class UpdateFramePoint(BaseModel):
-    y: Optional[float]
-    z: Optional[float]
+    y: Optional[decimal.Decimal]
+    z: Optional[decimal.Decimal]
 
 
 FramePointSchemaCreate = pydantic_model_creator(
@@ -16,5 +17,5 @@ FramePointSchemaCreate = pydantic_model_creator(
 )
 
 FramePointSchema = pydantic_model_creator(
-    FramePoint, name=f"{FramePoint.__name__}Schema", exclude=("frame",)
+    FramePoint, name=f"{FramePoint.__name__}Schema",
 )

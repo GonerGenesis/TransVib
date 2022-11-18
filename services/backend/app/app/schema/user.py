@@ -63,7 +63,7 @@ async def update_user(self, user_id: int, user: UserUpdate) -> UserType:
     # print(obj_in.dict(exclude_unset=True))
     # await User.filter(id=id).update(**obj_in.dict(exclude_unset=True))
     # return await UserSchema.from_queryset_single(User.get(id=id))
-    obj_in: UserSchemaCreate = user.to_pydantic()
+    obj_in: UserSchemaUpdate = user.to_pydantic()
     user: UserSchema = await funcs.user.update(id=user_id, obj_in=obj_in)
     return user
 

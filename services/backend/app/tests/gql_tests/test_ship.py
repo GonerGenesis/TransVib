@@ -1,16 +1,20 @@
 import pytest
 
-async def test_create_user(http_client):
-    # transport = AIOHTTPTransport(url="http://0.0.0.0:5000/graphql")
-    # client = Client(transport=transport, fetch_schema_from_transport=True)
-    # print(http_client.base_url)
+async def test_create_ship(http_client):
 
-    mutation = 'mutation CreateShip { createShip(user: {username: "geemo", fullName: "GK", password: "kaymo"}){' \
-               'username fullName}} '
+    mutation = """
+                mutation CreateShip {
+                    createShip(ship: {title: "moep", description: "miep", authorId: 1}){
+                    title
+                    description
+                    id
+                    }
+                } """
     payload = {"query": mutation}
 
     response = await http_client.post("/graphql", json=payload)
     json = response.json()
-    print('test create user', json)
+    print('test create ship', json)
 
-    assert json["data"]["createUser"]["username"] == "geemo"
+    assert json["data"]["createShip"]["title"] == "moep"
+    assert json["data"]["createShip"]["description"] == "miep"

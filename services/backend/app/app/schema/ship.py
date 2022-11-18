@@ -10,8 +10,8 @@ if TYPE_CHECKING:
     from app.schema.user import UserType
 
 
-#@strawberry.type
-@strawberry.experimental.pydantic.type(model=ShipSchema)
+@strawberry.type
+#@strawberry.experimental.pydantic.type(model=ShipSchema)
 class ShipType:
     id: int
     title: str
@@ -27,10 +27,10 @@ class ShipInput:
 
 @strawberry.field
 async def get_ship(self, id: int) -> ShipType:
-    return ShipType.from_pydantic(await funcs.ship.get(id=id))
+    return await funcs.ship.get(id=id)
 
 
 @strawberry.mutation
 async def create_ship(self, ship: ShipInput) -> ShipType:
     ship_obj: ShipSchema = await funcs.ship.create(ship.to_pydantic())
-    return ShipType.from_pydantic(ship_obj)
+    return ship_obj

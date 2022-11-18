@@ -143,8 +143,8 @@ class FramePoint(models.Model):
     frame: fields.ForeignKeyRelation[Frame] = fields.ForeignKeyField("models.Frame", related_name="frame_points")
     y = fields.DecimalField(max_digits=9, decimal_places=3)
     z = fields.DecimalField(max_digits=9, decimal_places=3)
-    # starts_segments = fields.ManyToManyField('models.FrameSegment', related_name='start_point')
-    # end_segments = fields.ManyToManyField('models.FrameSegment', related_name='end_point')
+    starts_segments: fields.ManyToManyRelation["FrameSegment"]
+    end_segments: fields.ManyToManyRelation["FrameSegment"]
 
     def __hash__(self):
         return hash((self.id, self.frame_id))

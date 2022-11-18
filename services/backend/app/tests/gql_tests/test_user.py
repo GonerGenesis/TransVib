@@ -6,6 +6,8 @@ from httpx import ASGITransport
 
 from tortoise.contrib import test
 
+from tests.utils.utils import random_ship
+
 
 # pytestmark = pytest.mark.asyncio
 
@@ -40,11 +42,16 @@ async def test_create_user(http_client):
 
 
 async def test_get_user(http_client):
+    ship = await random_ship(1)
     query = """
     query GetUser {
         getUser(id: 1) {
             id
             username
+            ships{
+                title
+                id
+            }
         }
     }
     """
@@ -55,6 +62,9 @@ async def test_get_user(http_client):
 
     assert json["data"]["getUser"]["username"] == "admin@gschwifast.com"
     assert json["data"]["getUser"]["id"] == 1
+    assert json["data"]["getUser"]["ships"][-1]["id"] == ship.id
+    assert json["data"]["getUser"]["ships"][-1]["title"] == ship.title
+
 
 
 async def test_update_user(http_client):

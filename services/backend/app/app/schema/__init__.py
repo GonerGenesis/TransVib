@@ -39,7 +39,7 @@ class Mutation:
     from .ship import create_ship
     from .frame import create_frame
     from .frame_segment import create_segment
-    from .frame_point import create_point
+    from .frame_point import create_point, update_point, delete_point
     from .frame_csvalues import create_cs_values
 
 
