@@ -23,13 +23,13 @@ class CRUDSegment(CRUDBase[FrameSegment, FrameSegmentSchema, FrameSegmentSchemaC
 segment = CRUDSegment(FrameSegment, FrameSegmentSchema)
 
 
-async def create_segment(self, frame_id: int, start_point_id: int, end_point_id: int, thick: float):
-    print(locals())
-    dict_in = locals()
-    dict_in.pop('self')
-    obj_in: FrameSegmentSchemaCreate = FrameSegmentSchemaCreate(**dict_in)
-    return await segment.create(obj_in)
-
-
-async def get_segment(self, id: int):
-    return await segment.get(id)
+# async def create_segment(self, frame_id: int, start_point_id: int, end_point_id: int, thick: float):
+#     print(locals())
+#     dict_in = locals()
+#     dict_in.pop('self')
+#     obj_in: FrameSegmentSchemaCreate = FrameSegmentSchemaCreate(**dict_in)
+#     return await segment.create(obj_in)
+#
+#
+# async def get_segment(self, id: int):
+#     return await segment.get(id)

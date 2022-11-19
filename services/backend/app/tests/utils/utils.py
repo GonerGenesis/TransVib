@@ -18,7 +18,7 @@ def random_id() -> int:
 
 
 def random_pos() -> float:
-    return random.uniform(0, 500)
+    return round(random.uniform(0, 500), 3)
 
 
 async def random_point(frame_id: int) -> FramePoint:

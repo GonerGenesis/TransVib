@@ -151,7 +151,7 @@ async def random_setup():
     segment = await FrameSegment.create(frame_id=frame.id, start_point_id=point_1.id,
                                         end_point_id=point_2.id,
                                         thick=0.02)
-    return {'ship': ship, 'frame': frame, 'p1': point_1, 'p2':point_2, 'segment': segment}
+    return {'ship': ship, 'frame': frame, 'p1': point_1, 'p2': point_2, 'segment': segment}
 
 async def create_geometry() -> int:
     ship = await random_ship(1)

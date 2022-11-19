@@ -81,9 +81,10 @@ async def test_create_segment(http_client, random_setup):
 
 async def test_update_segment(http_client, random_setup):
     thick = random_pos()
+    print(random_setup['segment'].thick)
     mutation = """
-           mutation UpdateSegment{
-               updateSegment(segmentID: {}, segment: {{thick: {}}}){{
+           mutation UpdateSegment{{
+               updateSegment(segmentId: {}, segment: {{thick: {}}}){{
                    id
                    thick
                    frame{{
@@ -98,17 +99,20 @@ async def test_update_segment(http_client, random_setup):
     response = await http_client.post("/graphql", json=payload)
     json = response.json()
     print('test update segment', json)
+    segment = await FrameSegment.get(id=random_setup['segment'].id)
+    print(segment.__dict__)
 
     assert json["data"]["updateSegment"]["id"] == random_setup["segment"].id
     assert json["data"]["updateSegment"]["frame"]["id"] == random_setup["frame"].id
-    assert float(json["data"]["updateSegment"]["thick"]) == pytest.approx(random_setup["segment"].thick)
+    assert float(json["data"]["updateSegment"]["thick"]) == pytest.approx(float(segment.thick))
 
 
 async def test_delete_point(http_client, random_setup):
-    segment = random_segment(random_setup['frame'].id)
+    segment = await random_segment(random_setup['frame'].id)
+    print(segment.__dict__)
     mutation = """
-                mutation DeleteFrame {{
-                    deleteFrame(id: {}){{
+                mutation DeleteSegment {{
+                    deleteSegment(id: {}){{
                         id
                         msg
                         type 
@@ -121,4 +125,4 @@ async def test_delete_point(http_client, random_setup):
     json = response.json()
     print('test delete segment', json)
 
-    assert json["data"]["deleteFrame"]["msg"] == "Deleted FrameSegment {}".format(segment.id)
+    assert json["data"]["deleteSegment"]["msg"] == "Deleted FrameSegment {}".format(segment.id)
