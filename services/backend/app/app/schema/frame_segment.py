@@ -6,6 +6,7 @@ from ..db import functions as funcs
 
 if TYPE_CHECKING:
     from .frame_point import FramePointType
+    from .frame import FrameType
 
 
 #@strawberry.experimental.pydantic.type(model=FrameSegmentSchema)
@@ -15,6 +16,7 @@ class FrameSegmentType:
     start_point: Annotated['FramePointType', strawberry.lazy('.frame_point')]
     end_point: Annotated['FramePointType', strawberry.lazy('.frame_point')]
     thick: float
+    frame: Annotated['FrameType', strawberry.lazy('.frame')]
 
 
 @strawberry.experimental.pydantic.input(model=FrameSegmentSchemaCreate, all_fields=True)

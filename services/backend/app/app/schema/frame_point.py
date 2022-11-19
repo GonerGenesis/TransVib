@@ -47,8 +47,8 @@ async def create_point(self, point: FramePointInput) -> FramePointType:
 @strawberry.mutation
 async def update_point(self, point_id: int, point: FramePointUpdate) -> FramePointType:
     obj_in: UpdateFramePoint = point.to_pydantic()
-    user: FramePointSchema = await funcs.point.update(id=point_id, obj_in=obj_in)
-    return user
+    point: FramePointSchema = await funcs.point.update(id=point_id, obj_in=obj_in)
+    return point
 
 
 @strawberry.mutation

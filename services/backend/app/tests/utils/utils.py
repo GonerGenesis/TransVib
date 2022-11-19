@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from httpx import AsyncClient
 
 from app.core.config import get_settings
-from app.db.models import FramePoint, Ship, Frame
+from app.db.models import FramePoint, Ship, Frame, FrameSegment
 
 
 def random_lower_string() -> str:
@@ -24,6 +24,10 @@ def random_pos() -> float:
 async def random_point(frame_id: int) -> FramePoint:
     return await FramePoint.create(y=random_pos(), z=random_pos(), frame_id=frame_id)
 
+async def random_segment(frame_id: int) -> FrameSegment:
+    p1 = await random_point(frame_id)
+    p2 = await random_point(frame_id)
+    return await FrameSegment.create(start_point=p1, end_point=p2, frame_id=frame_id, thick=random_pos())
 
 async def random_ship(user_id: int) -> Ship:
     return await Ship.create(title=random_lower_string(), description=random_lower_string(), author_id=user_id)

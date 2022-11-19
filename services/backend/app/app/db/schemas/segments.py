@@ -17,5 +17,5 @@ FrameSegmentSchemaCreate = pydantic_model_creator(
 )
 
 FrameSegmentSchema = pydantic_model_creator(
-    FrameSegment, name=f"{FrameSegment.__name__}Schema", exclude=("frame",)
+    FrameSegment, name=f"{FrameSegment.__name__}Schema",
 )

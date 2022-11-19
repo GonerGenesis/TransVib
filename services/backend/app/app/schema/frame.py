@@ -2,7 +2,8 @@ from typing import Optional, List, Annotated, TYPE_CHECKING
 
 import strawberry
 
-from ..db.schemas import FrameSchemaCreate, FrameSchema
+from .msg import MsgType
+from ..db.schemas import FrameSchemaCreate, FrameSchema, UpdateFrame
 from ..db import functions as funcs
 
 if TYPE_CHECKING:
@@ -27,6 +28,10 @@ class FrameType:
 class FrameInput:
     pass
 
+@strawberry.experimental.pydantic.input(model=UpdateFrame, all_fields=True)
+class FrameUpdate:
+    pass
+
 @strawberry.field
 async def get_frame(self, id: int) -> FrameType:
     return await funcs.frame.get(id=id)
@@ -35,3 +40,14 @@ async def get_frame(self, id: int) -> FrameType:
 async def create_frame(self, frame: FrameInput) -> FrameType:
     frame_obj = await funcs.frame.create(frame.to_pydantic())
     return frame_obj
+
+@strawberry.mutation
+async def update_frame(self, frame_id: int, frame: FrameUpdate) -> FrameType:
+    obj_in: UpdateFrame = frame.to_pydantic()
+    frame: FrameSchema = await funcs.frame.update(id=frame_id, obj_in=obj_in)
+    return frame
+
+
+@strawberry.mutation
+async def delete_frame(self, id: int) -> MsgType:
+    return await funcs.frame.delete(id=id)
