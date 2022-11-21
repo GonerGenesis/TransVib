@@ -45,22 +45,22 @@ services:
     #
     # You also have to change the flower command
 
-#  celeryworker:
-#    volumes:
-#      - ./services/backend/app:/app
-#    # image: '${DOCKER_IMAGE_CELERYWORKER?Variable not set}:${TAG-latest}'
-#    depends_on:
-#      - db
-#      - queue
-#    env_file:
-#      - .env
-#    environment:
-#      - DATABASE_TEST_URL=postgres://postgres:dda73c8802c63a805b43fb7ee5b27ebeaef7aaa5a27d3170f2d8438e2e8d4d4f@db:5432/gschwi-fast-vue-test
-#      - RUN=watchmedo auto-restart --directory=./app/calc/ --pattern=*.py --recursive -- celery -A worker worker -l info -Q main-queue -c 1
-#      # - SMTP_HOST=${SMTP_HOST?Variable not set}
-#    build:
-#      context: ./services/backend
-#      dockerfile: celeryworker.dockerfile
+  celeryworker:
+    volumes:
+      - ./services/backend/app:/app
+    # image: '${DOCKER_IMAGE_CELERYWORKER?Variable not set}:${TAG-latest}'
+    depends_on:
+      - db
+      - queue
+    env_file:
+      - .env
+    environment:
+      - DATABASE_TEST_URL=postgres://postgres:dda73c8802c63a805b43fb7ee5b27ebeaef7aaa5a27d3170f2d8438e2e8d4d4f@db:5432/trans-vib-test
+      - RUN=watchmedo auto-restart --directory=./app/calc/ --pattern=*.py --recursive -- celery -A worker worker -l info -Q main-queue -c 1
+      # - SMTP_HOST=${SMTP_HOST?Variable not set}
+    build:
+      context: ./services/backend
+      dockerfile: celeryworker.dockerfile
 
   db:
     image: postgres
