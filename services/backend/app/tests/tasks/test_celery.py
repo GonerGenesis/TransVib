@@ -1,10 +1,20 @@
 import pytest
+from fastapi import Depends
+
+from app.core.config import get_settings
 from app.db.models import FrameCSValues, FramePoint, Frame
 from app.db.schemas import FramePointSchema, FrameSchema
 import numpy as np
 
 pytestmark = pytest.mark.asyncio
 
+
+# async def get_context(
+#         settings=Depends(get_settings),
+# ):
+#     return {
+#         'settings': settings
+#     }
 
 async def test_celery_running():
     from app.worker import test_celery
@@ -17,6 +27,8 @@ async def test_celery_running():
 async def test_celery_calcs(test_app_with_db, geometry_ready):
     from app.worker import calc_frame_properties
     print(f"going with frame:{geometry_ready}")
+    # context = await get_context()
+    # print(context['settings'].testing)
     # print(await FramePoint.filter(frame_id=geometry_ready).all())
     # print(await FrameSchema.from_queryset_single(Frame.get(id=geometry_ready)))
     r = calc_frame_properties.apply_async(args=[geometry_ready, True], queue='main-queue')

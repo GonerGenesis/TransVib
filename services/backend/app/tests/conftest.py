@@ -24,9 +24,12 @@ from tests.utils.utils import get_superuser_token_headers, random_pos, random_sh
 
 nest_asyncio.apply()
 
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 def get_settings_override():
-    return Settings(testing=1, database_url=os.environ.get("DATABASE_TEST_URL"))
+    return Settings(testing=True, database_url=os.environ.get("DATABASE_TEST_URL"))
 
 
 @pytest.fixture(scope="session")
@@ -46,6 +49,8 @@ async def test_app_with_db(request, event_loop):
     print("blub")
     app = create_application()
     app.dependency_overrides[get_settings] = get_settings_override
+    os.environ['DATABASE_URL']=os.environ.get("DATABASE_TEST_URL")
+    LOGGER.info(os.environ.get("DATABASE_URL"))
     db_url = os.environ.get("DATABASE_TEST_URL")
     initializer(["app.db.models.models"], db_url=db_url, app_label="models", loop=event_loop)
     request.addfinalizer(finalizer)

@@ -1,4 +1,4 @@
-from fastapi import Request
+from fastapi import Request, Depends
 
 import strawberry
 from strawberry.fastapi import GraphQLRouter
@@ -7,6 +7,7 @@ from strawberry.types import ExecutionResult
 from graphql.error.graphql_error import format_error as format_graphql_error
 from tortoise.contrib.pydantic import PydanticModel
 
+from app.core.config import get_settings
 from app.db.schemas import *
 import app.db.functions as funcs
 from app.schema.frame import FrameType, FrameInput
