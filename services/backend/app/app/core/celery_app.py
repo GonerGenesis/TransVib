@@ -6,6 +6,8 @@ from celery.signals import celeryd_init, task_prerun, task_received, task_postru
 from tortoise import Tortoise
 import logging
 
+from app.core.config import TORTOISE_ORM
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -14,20 +16,12 @@ celery_app = Celery("worker", backend='rpc://', broker="amqp://guest@queue//")
 celery_app.conf.task_routes = {"app.worker.test_celery": "main-queue", "app.worker.calc_frame_properties": "main-queue"}
 
 
-async def init(test: bool = False):
-    connections = {"default": os.environ.get("DATABASE_URL")}
-    if test:
-        connections['default'] = os.environ.get("DATABASE_TEST_URL")
+async def init():
+    # connections = {"default": os.environ.get("DATABASE_URL")}
+    # if test:
+    #    connections['default'] = os.environ.get("DATABASE_TEST_URL")
     await Tortoise.init(
-        config={
-            "connections": connections,
-            "apps": {
-                "models": {
-                    "models": ["app.db.models.models"],
-                    "default_connection": "default",
-                }
-            },
-        }
+        config=TORTOISE_ORM
         # db_url=,
         # modules={"models": ["app.database.models"]},
     )

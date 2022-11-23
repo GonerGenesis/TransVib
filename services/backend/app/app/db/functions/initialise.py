@@ -2,29 +2,19 @@
 
 
 import logging
-import os
 import sys
 
 from fastapi import FastAPI
 from tortoise import Tortoise, run_async
 from tortoise.contrib.fastapi import register_tortoise
 
-from app.core.config import get_settings
+from app.core.config import TORTOISE_ORM
+
+#from app.core.config import get_settings
 
 log = logging.getLogger("uvicorn")
 
-settings = get_settings()
-
-
-TORTOISE_ORM = {
-    "connections": {"default": settings.database_url},
-    "apps": {
-        "models": {
-            "models": ["app.db.models.models", "aerich.models"],
-            "default_connection": "default",
-        },
-    },
-}
+# settings = get_settings()
 
 
 async def init_db(app: FastAPI) -> None:
@@ -40,8 +30,9 @@ async def init_db(app: FastAPI) -> None:
     logger_tortoise.addHandler(sh)
     register_tortoise(
         app,
-        db_url=settings.database_url,
-        modules={"models": ["app.db.models.models"]},
+        # db_url=settings.database_url,
+        # modules={"models": ["app.db.models.models"]},
+        config=TORTOISE_ORM,
         generate_schemas=False,
         add_exception_handlers=True,
     )

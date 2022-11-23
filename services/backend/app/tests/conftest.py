@@ -13,8 +13,7 @@ from tortoise import connections, Tortoise
 
 from typing import Dict
 
-from app.core.config import get_settings, Settings
-from app.db.functions.initialise import TORTOISE_ORM
+from app.core.config import get_settings, Settings, TORTOISE_ORM
 from app.main import create_application
 from app.db.models import Ship, Frame, FramePoint, FrameSegment, FrameCSValues
 from app.db.schemas import UserSchemaCreate
@@ -52,7 +51,7 @@ async def test_app_with_db(request, event_loop):
     os.environ['DATABASE_URL']=os.environ.get("DATABASE_TEST_URL")
     LOGGER.info(os.environ.get("DATABASE_URL"))
     db_url = os.environ.get("DATABASE_TEST_URL")
-    initializer(["app.db.models.models"], db_url=db_url, app_label="models", loop=event_loop)
+    initializer(["app.db.models"], db_url=db_url, app_label="models", loop=event_loop)
     request.addfinalizer(finalizer)
     yield app
 
@@ -71,7 +70,7 @@ async def set_initial_data(test_app_with_db):
     db_url = os.environ.get("DATABASE_TEST_URL")
     # new_loop = asyncio.new_event_loop()
     print(db_url)
-    await Tortoise.init(db_url=db_url, modules={"models": ["app.db.models.models"]})
+    await Tortoise.init(db_url=db_url, modules={"models": ["app.db.models"]})
     print("connections:", connections.db_config.items())
     # env_initializer()
     user = UserSchemaCreate(username=os.environ.get("FIRST_SUPERUSER"), full_name="Administrator",

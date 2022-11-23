@@ -5,7 +5,7 @@ import logging
 
 import nest_asyncio
 import networkx as nx
-from tortoise import Tortoise, BaseDBAsyncClient
+from tortoise import Tortoise, BaseDBAsyncClient, connections
 from tortoise.fields import ReverseRelation
 from tortoise.transactions import in_transaction
 
@@ -35,21 +35,23 @@ async def calc_frame_properties(frame_id: int, test=False, debug=False):
         conn_name = "default"
     # logger.info(in_transaction())
     try:
-        asyncio.run(init(test))
+        asyncio.run(init())
+        connection: BaseDBAsyncClient = connections.get(conn_name)
+        logger.info(connection.connection_name)
         # logger.info(await FrameSchema.from_queryset_single(Frame.get(id=frame_id)))
         # logger.info(await Frame.filter(id=frame_id).using_db(conn).first())
         # logger.info(await Frame.filter(id=frame_id).using_db(conn).prefetch_related('frame_points'))
-        frame: Frame = await Frame.get(id=frame_id).prefetch_related('frame_segments', 'cs_values')
+        frame: Frame = await Frame.get(id=frame_id, using_db=connection).prefetch_related('frame_segments', 'cs_values')
         # frame: Frame = await Frame.filter(id=frame_id).using_db(conn).first()
         # frame: FrameSchema = await FrameSchema.from_queryset_single(Frame.filter(id=frame_id).using_db(conn).first())
         frame_segments = frame.frame_segments
-        logger.info("frame: %s", frame_segments)
+        logger.info("frame: %s", repr(frame))
         frame_props: FrameCSValues = frame.cs_values
         logger.info("frame_props: %s", frame_props)
         if frame_props:
             if frame_props.modified_at >= frame.modified_at:
                 raise AlreadyUpToDateException
-        await write_results_to_db(frame, frame_props)
+        await write_results_to_db(frame, frame_props, connection)
             # print("watchme2")
         # if debug:
         #     fig = OmegaPlot(graph).fig
@@ -59,7 +61,7 @@ async def calc_frame_properties(frame_id: int, test=False, debug=False):
     return True
 
 
-async def write_results_to_db(frame: FrameSchema, frame_props: FrameCSValues):
+async def write_results_to_db(frame: FrameSchema, frame_props: FrameCSValues, connection: BaseDBAsyncClient):
     graph = nx.Graph()
     edge: FrameSegment
     for edge in frame.frame_segments:
@@ -84,5 +86,5 @@ async def write_results_to_db(frame: FrameSchema, frame_props: FrameCSValues):
     print(frame_props)
     if frame_props:
         print("update")
-        await frame_props.delete()
-    await frame_props_in.save()
+        await frame_props.delete(using_db=connection)
+    await frame_props_in.save(using_db=connection)

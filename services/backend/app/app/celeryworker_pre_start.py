@@ -6,6 +6,8 @@ from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixe
 # from app.db.session import SessionLocal
 from tortoise import Tortoise
 
+from app.core.config import TORTOISE_ORM
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -23,17 +25,7 @@ async def init() -> None:
     try:
         # Try to create session to check if DB is awake
         await Tortoise.init(
-            config={
-                "connections": {
-                    "default": os.environ.get("DATABASE_URL"), "test": os.environ.get("DATABASE_TEST_URL")
-                },
-                "apps": {
-                    "models": {
-                        "models": ["app.db.models.models"],
-                        "default_connection": "default",
-                    }
-                },
-            }
+            config=TORTOISE_ORM
             # db_url=,
             # modules={"models": ["app.database.models"]},
         )
