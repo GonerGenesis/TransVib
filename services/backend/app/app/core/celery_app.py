@@ -16,19 +16,6 @@ celery_app = Celery("worker", backend='rpc://', broker="amqp://guest@queue//")
 celery_app.conf.task_routes = {"app.worker.test_celery": "main-queue", "app.worker.calc_frame_properties": "main-queue"}
 
 
-async def init():
-    # connections = {"default": os.environ.get("DATABASE_URL")}
-    # if test:
-    #    connections['default'] = os.environ.get("DATABASE_TEST_URL")
-    await Tortoise.init(
-        config=TORTOISE_ORM
-        # db_url=,
-        # modules={"models": ["app.database.models"]},
-    )
-    logger.info("conns initialized")
-    # logger.info(Tortoise.get_connection('default'))
-
-
 # @task_prerun.connect
 # def configure_workers(task_id, task, **kwargs):
 #     logger.info("get DB connection")

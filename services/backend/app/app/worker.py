@@ -2,7 +2,7 @@
 import nest_asyncio
 from tortoise import Tortoise
 
-from app.core.celery_app import celery_app, init
+from app.core.celery_app import celery_app
 from app.calc.csvalues import utils
 # from asgiref.sync import async_to_sync
 import asyncio

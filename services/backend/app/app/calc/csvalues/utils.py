@@ -2,25 +2,39 @@
 # from celery import Celery
 import asyncio
 import logging
+from typing import List
 
 import nest_asyncio
 import networkx as nx
 from tortoise import Tortoise, BaseDBAsyncClient, connections
+from tortoise.contrib.pydantic import PydanticListModel
 from tortoise.fields import ReverseRelation
 from tortoise.transactions import in_transaction
 
 from ...db.models import Frame, FrameCSValues, FrameSegment
-from ...db.schemas import FrameSchema
+from ...db.schemas import FrameSchema, FrameSegmentSchema
 from app.calc.csvalues import cs_inertia, cs_torsion
-from app.core.config import get_settings
+from app.core.config import get_settings, TORTOISE_ORM
 from .frame_calculations import FrameCalculations
-from app.core.celery_app import init
 
 nest_asyncio.apply()
 # from . import info
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+async def init(conn: str):
+    # connections = {"default": os.environ.get("DATABASE_URL")}
+    # if test:
+    #    connections['default'] = os.environ.get("DATABASE_TEST_URL")
+    await Tortoise.init(
+        config=TORTOISE_ORM
+        # db_url=,
+        # modules={"models": ["app.database.models"]},
+    )
+    logger.info("conns initialized")
+    # logger.info(Tortoise.get_connection('default'))
+    return connections.get(conn)
 
 class AlreadyUpToDateException(Exception):
     def __init__(self):
@@ -35,19 +49,23 @@ async def calc_frame_properties(frame_id: int, test=False, debug=False):
         conn_name = "default"
     # logger.info(in_transaction())
     try:
-        asyncio.run(init())
-        connection: BaseDBAsyncClient = connections.get(conn_name)
+        connection = await init(conn_name)
+        # connection: BaseDBAsyncClient = connections.get(conn_name)
         logger.info(connection.connection_name)
         # logger.info(await FrameSchema.from_queryset_single(Frame.get(id=frame_id)))
         # logger.info(await Frame.filter(id=frame_id).using_db(conn).first())
         # logger.info(await Frame.filter(id=frame_id).using_db(conn).prefetch_related('frame_points'))
-        frame: Frame = await Frame.get(id=frame_id, using_db=connection).prefetch_related('frame_segments', 'cs_values')
+        frame: Frame = await Frame.get(id=frame_id, using_db=connection)
         # frame: Frame = await Frame.filter(id=frame_id).using_db(conn).first()
         # frame: FrameSchema = await FrameSchema.from_queryset_single(Frame.filter(id=frame_id).using_db(conn).first())
+        logger.info("frame: %s", frame.__dict__)
+        await frame.fetch_related('ship', 'cs_values', 'frame_segments', 'frame_points', using_db=connection)
+        logger.info("frame: %s", frame.__dict__)
         frame_segments = frame.frame_segments
-        logger.info("frame: %s", repr(frame))
         frame_props: FrameCSValues = frame.cs_values
         logger.info("frame_props: %s", frame_props)
+        logger.info("frame_segments: %s", frame.frame_segments)
+        logger.info("frame_segments_objects: %s", frame.frame_segments.related_objects)
         if frame_props:
             if frame_props.modified_at >= frame.modified_at:
                 raise AlreadyUpToDateException
@@ -57,16 +75,19 @@ async def calc_frame_properties(frame_id: int, test=False, debug=False):
         #     fig = OmegaPlot(graph).fig
         #     fig.show()
     finally:
-        asyncio.run(Tortoise.close_connections())
+        await Tortoise.close_connections()
     return True
 
 
-async def write_results_to_db(frame: FrameSchema, frame_props: FrameCSValues, connection: BaseDBAsyncClient):
+async def write_results_to_db(frame: Frame, frame_props: FrameCSValues, connection: BaseDBAsyncClient):
     graph = nx.Graph()
+    frame_segments = frame.frame_segments.related_objects
+    logger.info("frame_segments: {}".format(frame_segments))
     edge: FrameSegment
-    for edge in frame.frame_segments:
+    for edge in frame_segments:
         # logger.info("edge: %s", edge.fetch_related())
-        logger.info("p1: %s, p2: %s", await edge.start_point.first(), await edge.end_point.first())
+        egde = edge
+        logger.info("p1: %s, p2: %s", await edge.fetch_related('start_point', using_db=connection).start_point.first(), await edge.end_point.first())
         graph.add_edge(await edge.start_point.first(), await edge.end_point.first(), thick=float(edge.thick))
     logger.info(graph)
     calc_frame = FrameCalculations(graph, logger)

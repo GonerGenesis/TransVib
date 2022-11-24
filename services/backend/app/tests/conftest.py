@@ -206,8 +206,8 @@ async def create_geometry() -> int:
     return frame.id
 
 
-@pytest.fixture()
-@pytest.mark.asyncio
+@pytest.fixture(scope="session")
+# @pytest.mark.asyncio
 async def geometry_ready(test_app_with_db) -> int:
     # loop = asyncio._event_loop()
     # loop = asyncio.new_event_loop()
