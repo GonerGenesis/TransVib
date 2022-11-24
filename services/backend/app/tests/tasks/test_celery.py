@@ -5,6 +5,7 @@ from app.core.config import get_settings
 from app.db.models import FrameCSValues, FramePoint, Frame
 from app.db.schemas import FramePointSchema, FrameSchema
 import numpy as np
+from tortoise import connections, Tortoise
 
 pytestmark = pytest.mark.asyncio
 
@@ -31,7 +32,7 @@ async def test_celery_calcs(test_app_with_db, geometry_ready):
     # print(context['settings'].testing)
     # print(await FramePoint.filter(frame_id=geometry_ready).all())
     # print(await FrameSchema.from_queryset_single(Frame.get(id=geometry_ready)))
-    r = calc_frame_properties.apply_async(args=[geometry_ready, True], queue='main-queue')
+    r = calc_frame_properties.apply_async(args=[geometry_ready, 'test'], queue='main-queue')
     print(r.get())
     frame_props: FrameCSValues = await FrameCSValues.get(frame_id=geometry_ready)
     # print(r.get())

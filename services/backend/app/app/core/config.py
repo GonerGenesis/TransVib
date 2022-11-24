@@ -9,7 +9,7 @@ log = logging.getLogger("uvicorn")
 
 class Settings(BaseSettings):
     environment: str = os.getenv("ENVIRONMENT", "dev")
-    testing: bool = os.getenv("TESTING", False)
+    database: str = os.getenv("DATABASE", 'default')
     # database_url: AnyUrl = os.environ.get("DATABASE_URL")
     # database_test_url: AnyUrl = os.environ.get("DATABASE_TEST_URL")
     POSTGRES_PORT: str = os.environ.get("POSTGRES_PORT")

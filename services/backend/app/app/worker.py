@@ -24,14 +24,14 @@ def test_celery(word: str) -> str:
 
 
 @celery_app.task
-def calc_frame_properties(frame_id: int, test: bool = False):
+def calc_frame_properties(frame_id: int, conn_name: str = 'default'):
     # print(repr(frame))
     # frame = schemas.FrameWithGeometry.parse_obj(frame)
     # frame = models.Frame(**frame)
     # print("with geo", frame)
     logging.info("starting calculation")
     loop = asyncio.get_event_loop()
-    r = loop.run_until_complete(utils.calc_frame_properties(frame_id, test=test, debug=True))
+    r = loop.run_until_complete(utils.calc_frame_properties(frame_id, conn_name=conn_name, debug=True))
     # r = async_to_sync(utils.calc_frame_properties)(frame_id, test=test, debug=True)
     # r = utils.calc_frame_properties(frame_id, test=test, debug=True)
     return r

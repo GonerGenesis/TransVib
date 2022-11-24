@@ -4,6 +4,7 @@ import os
 import pytest
 import nest_asyncio
 
+import logging
 from starlette.testclient import TestClient
 from httpx import AsyncClient, ASGITransport
 
@@ -23,12 +24,12 @@ from tests.utils.utils import get_superuser_token_headers, random_pos, random_sh
 
 nest_asyncio.apply()
 
-import logging
 
 LOGGER = logging.getLogger(__name__)
 
+
 def get_settings_override():
-    return Settings(testing=True, database_url=os.environ.get("DATABASE_TEST_URL"))
+    return Settings(database='test', database_url=os.environ.get("DATABASE_TEST_URL"))
 
 
 @pytest.fixture(scope="session")
@@ -48,7 +49,7 @@ async def test_app_with_db(request, event_loop):
     print("blub")
     app = create_application()
     app.dependency_overrides[get_settings] = get_settings_override
-    os.environ['DATABASE_URL']=os.environ.get("DATABASE_TEST_URL")
+    os.environ['DATABASE_URL'] = os.environ.get("DATABASE_TEST_URL")
     LOGGER.info(os.environ.get("DATABASE_URL"))
     db_url = os.environ.get("DATABASE_TEST_URL")
     initializer(["app.db.models"], db_url=db_url, app_label="models", loop=event_loop)
@@ -107,6 +108,7 @@ async def create_test_frame(create_test_ship):
     yield frame
     await Frame.filter(id=frame.id).delete()
 
+
 # @pytest.fixture(scope="module")
 # @pytest.mark.asyncio
 # async def create_test_point(create_test_frame):
@@ -156,6 +158,7 @@ async def random_setup():
                                         end_point_id=point_2.id,
                                         thick=0.02)
     return {'ship': ship, 'frame': frame, 'p1': point_1, 'p2': point_2, 'segment': segment}
+
 
 async def create_geometry() -> int:
     ship = await random_ship(1)

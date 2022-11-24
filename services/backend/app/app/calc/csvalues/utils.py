@@ -27,8 +27,10 @@ async def init(conn: str):
     # connections = {"default": os.environ.get("DATABASE_URL")}
     # if test:
     #    connections['default'] = os.environ.get("DATABASE_TEST_URL")
+    config = TORTOISE_ORM
+    config['apps']['models']['default_connection']=conn
     await Tortoise.init(
-        config=TORTOISE_ORM
+        config=config
         # db_url=,
         # modules={"models": ["app.database.models"]},
     )
@@ -41,26 +43,26 @@ class AlreadyUpToDateException(Exception):
         super.__init__("frame properties are already up to date")
 
 
-async def calc_frame_properties(frame_id: int, test=False, debug=False):
+async def calc_frame_properties(frame_id: int, conn_name: str = 'default', debug=False):
     logger.info("calculation setup")
-    if test:
-        conn_name = "test"
-    else:
-        conn_name = "default"
-    # logger.info(in_transaction())
+    # if test:
+    #     conn_name = "test"
+    # else:
+    #     conn_name = "default"
+    # # logger.info(in_transaction())
     try:
-        connection = await init(conn_name)
+        await init(conn_name)
         # connection: BaseDBAsyncClient = connections.get(conn_name)
-        logger.info(connection.connection_name)
+        # logger.info(connection.connection_name)
         # logger.info(await FrameSchema.from_queryset_single(Frame.get(id=frame_id)))
         # logger.info(await Frame.filter(id=frame_id).using_db(conn).first())
         # logger.info(await Frame.filter(id=frame_id).using_db(conn).prefetch_related('frame_points'))
-        frame: Frame = await Frame.get(id=frame_id, using_db=connection)
+        frame: Frame = await Frame.get(id=frame_id).prefetch_related('ship', 'cs_values', 'frame_segments', 'frame_points')
         # frame: Frame = await Frame.filter(id=frame_id).using_db(conn).first()
         # frame: FrameSchema = await FrameSchema.from_queryset_single(Frame.filter(id=frame_id).using_db(conn).first())
         logger.info("frame: %s", frame.__dict__)
-        await frame.fetch_related('ship', 'cs_values', 'frame_segments', 'frame_points', using_db=connection)
-        logger.info("frame: %s", frame.__dict__)
+        # await frame.fetch_related('ship', 'cs_values', 'frame_segments', 'frame_points')
+        # logger.info("frame: %s", frame.__dict__)
         frame_segments = frame.frame_segments
         frame_props: FrameCSValues = frame.cs_values
         logger.info("frame_props: %s", frame_props)
@@ -69,7 +71,7 @@ async def calc_frame_properties(frame_id: int, test=False, debug=False):
         if frame_props:
             if frame_props.modified_at >= frame.modified_at:
                 raise AlreadyUpToDateException
-        await write_results_to_db(frame, frame_props, connection)
+        await write_results_to_db(frame, frame_props)
             # print("watchme2")
         # if debug:
         #     fig = OmegaPlot(graph).fig
@@ -79,15 +81,15 @@ async def calc_frame_properties(frame_id: int, test=False, debug=False):
     return True
 
 
-async def write_results_to_db(frame: Frame, frame_props: FrameCSValues, connection: BaseDBAsyncClient):
+async def write_results_to_db(frame: Frame, frame_props: FrameCSValues):
     graph = nx.Graph()
-    frame_segments = frame.frame_segments.related_objects
+    frame_segments = frame.frame_segments
     logger.info("frame_segments: {}".format(frame_segments))
     edge: FrameSegment
     for edge in frame_segments:
         # logger.info("edge: %s", edge.fetch_related())
         egde = edge
-        logger.info("p1: %s, p2: %s", await edge.fetch_related('start_point', using_db=connection).start_point.first(), await edge.end_point.first())
+        logger.info("p1: %s, p2: %s", await edge.start_point.first(), await edge.end_point.first())
         graph.add_edge(await edge.start_point.first(), await edge.end_point.first(), thick=float(edge.thick))
     logger.info(graph)
     calc_frame = FrameCalculations(graph, logger)
@@ -107,5 +109,5 @@ async def write_results_to_db(frame: Frame, frame_props: FrameCSValues, connecti
     print(frame_props)
     if frame_props:
         print("update")
-        await frame_props.delete(using_db=connection)
-    await frame_props_in.save(using_db=connection)
+        await frame_props.delete()
+    await frame_props_in.save()
