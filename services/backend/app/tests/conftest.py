@@ -29,7 +29,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_settings_override():
-    return Settings(database='test', database_url=os.environ.get("DATABASE_TEST_URL"))
+    return Settings(database='test')
 
 
 @pytest.fixture(scope="session")
@@ -147,6 +147,28 @@ def event_loop():
             yield loop
     loop.close()
 
+
+@pytest.fixture(scope="module")
+async def no_random_setup():
+    ship = await random_ship(1)
+    frame = await random_frame(ship.id)
+    point_1 = await FramePoint.create(y=0, z=0, frame_id=frame.id)
+    point_2 = await FramePoint.create(y=2, z=0, frame_id=frame.id)
+    point_3 = await FramePoint.create(y=2, z=4, frame_id=frame.id)
+    point_4 = await FramePoint.create(y=0, z=4, frame_id=frame.id)
+    segment = await FrameSegment.create(frame_id=frame.id, start_point_id=point_1.id,
+                                        end_point_id=point_2.id,
+                                        thick=0.02)
+    segment = await FrameSegment.create(frame_id=frame.id, start_point_id=point_2.id,
+                                        end_point_id=point_3.id,
+                                        thick=0.02)
+    segment = await FrameSegment.create(frame_id=frame.id, start_point_id=point_3.id,
+                                        end_point_id=point_4.id,
+                                        thick=0.02)
+    segment = await FrameSegment.create(frame_id=frame.id, start_point_id=point_4.id,
+                                        end_point_id=point_1.id,
+                                        thick=0.02)
+    return {'frame': frame}
 
 @pytest.fixture(scope="module")
 async def random_setup():

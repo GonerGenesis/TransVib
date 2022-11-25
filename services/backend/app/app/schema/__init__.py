@@ -16,6 +16,7 @@ from app.schema.frame_segment import FrameSegmentType, FrameSegmentInput
 from app.schema.frame_point import FramePointType, FramePointInput
 from app.schema.ship import ShipType, ShipInput
 from app.schema.user import UserType, UserInput
+from app.schema.utils import get_context
 
 
 # @strawberry.experimental.pydantic.type(model=FramePointSchema)
@@ -41,7 +42,6 @@ class Mutation:
     from .frame import create_frame, update_frame, delete_frame
     from .frame_segment import create_segment, update_segment, delete_segment
     from .frame_point import create_point, update_point, delete_point
-    from .frame_csvalues import create_cs_values
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
@@ -60,4 +60,7 @@ class MyGraphQLRouter(GraphQLRouter):
         return data
 
 
-graphql_app = GraphQLRouter(schema)
+graphql_app = GraphQLRouter(
+    schema,
+    context_getter=get_context,
+)
