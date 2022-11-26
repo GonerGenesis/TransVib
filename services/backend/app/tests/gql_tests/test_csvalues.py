@@ -1,5 +1,6 @@
 import pytest
 
+
 async def test_get_frame(http_client, no_random_setup):
     query = """
                query GetFrameCSValues {{
