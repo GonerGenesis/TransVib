@@ -12,8 +12,8 @@
 		<h1 class="text-3xl font-bold underline ">Welcome to SvelteKit</h1>
 		<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 	</div>
-	<div class="flex h-full">
-		<Sidebar/>
+	<div class="flex flex-row h-full w-full">
+		<Sidebar />
 		<Canvas class="h-full basis-3/4">
 			<T.PerspectiveCamera makeDefault position={[10, 10, 10]} fov={24}>
 				<OrbitControls maxPolarAngle={degToRad(80)} enableZoom={false} target={{ y: 0.5 }} />
