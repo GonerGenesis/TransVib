@@ -3,6 +3,40 @@ from fastapi import HTTPException
 from ..models import Frame
 from .base import CRUDBase
 from ..schemas.frames import FrameSchema, FrameSchemaCreate, UpdateFrame
+import yaml
+
+
+def process_yaml(self, file):
+    with open(file) as stream:
+        try:
+            args = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+        for i, point in enumerate(args['points']):
+            if not point.get('id'):
+                point['id'] = i + 1
+        if 'lines' in args:
+            args['segments'] = args.pop('lines')
+        for i, segment in enumerate(args['segments']):
+            if not segment.get('id'):
+                segment['id'] = i + 1
+            try:
+                segment['start'] = segment.pop('from')
+            except KeyError:
+                pass
+            try:
+                segment['end'] = segment.pop('to')
+            except KeyError:
+                pass
+            try:
+                del segment['shared_edge']
+            except KeyError:
+                pass
+        # print(args)
+        if 'x' in args:
+            args['frame_pos'] = args.pop('x')
+    return args
 
 
 class CRUDFrame(CRUDBase[Frame, FrameSchema, FrameSchemaCreate, UpdateFrame]):
@@ -21,7 +55,6 @@ class CRUDFrame(CRUDBase[Frame, FrameSchema, FrameSchemaCreate, UpdateFrame]):
 
 
 frame = CRUDFrame(Frame, FrameSchema)
-
 
 # async def create_frame(self, ship_id: int, frame_pos: float):
 #     print(locals())
