@@ -1,0 +1,6 @@
+points
+\s*(\-?\d+\.\d*)\s*(\-?\d+\.\d*).*\n*
+ - y: $1\n   z: $2\n
+lines
+\D*(\d+)\s*(\d+)\s*(\d+\.\d*).*\n*
+ - from: $1\n   to: $2\n   thick: $3\n
