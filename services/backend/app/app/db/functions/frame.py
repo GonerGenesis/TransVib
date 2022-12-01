@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import HTTPException
 
 from ..models import Frame
@@ -5,12 +7,14 @@ from .base import CRUDBase
 from ..schemas import FrameSchema, FrameSchemaCreate, UpdateFrame, FrameSchemaCreateWithGeo
 import yaml
 
+LOGGER = logging.getLogger(__name__)
+
 
 class CRUDFrame(CRUDBase[Frame, FrameSchema, FrameSchemaCreate, UpdateFrame]):
     # pass
     async def create(self, frame_in: FrameSchemaCreateWithGeo):
         frame_in = frame_in.dict()
-        print(frame_in)
+        LOGGER.info(frame_in)
         geometry = frame_in.pop("frame_geometry")
         if geometry:
             pass
@@ -18,6 +22,7 @@ class CRUDFrame(CRUDBase[Frame, FrameSchema, FrameSchemaCreate, UpdateFrame]):
         #     frame_in.pop("points")
         # if "segments" in frame_in:
         #     frame_in.pop("segments")
+        # frame = await super().create(FrameSchemaCreate(ship_id=frame_in["ship_id"], frame_pos=frame_in["frame_pos"]))
         frame = await super().create(FrameSchemaCreate(**frame_in))
         # frame_obj = await self.create_frame_obj(frame_in)
         # return await FrameSchema.from_tortoise_orm(await frame_obj)

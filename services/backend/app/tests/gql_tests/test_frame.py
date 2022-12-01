@@ -1,7 +1,12 @@
 import pytest
+import yaml
 
 from app.db.models import FrameSegment, Frame
 from tests.utils.utils import random_ship, random_frame, random_point, random_pos
+
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 
 def process_yaml(self, file):
@@ -84,11 +89,11 @@ async def test_create_frame(http_client):
     pos = random_pos()
     mutation = """
                 mutation CreateFrame {{
-                    createFrame(frame: {{framePos: "{}", shipId: {}}}){{
+                    createFrame(frame: {{shipId: {}, framePos: {}}}){{
                     framePos
                     id
                     }}
-                }} """.format(pos, ship.id)
+                }} """.format(ship.id, pos)
     payload = {"query": mutation}
 
     response = await http_client.post("/graphql", json=payload)
