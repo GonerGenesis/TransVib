@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 from ..models import FrameSegment
 from .base import CRUDBase
-from ..schemas.segments import FrameSegmentSchema, FrameSegmentSchemaCreate, UpdateFrameSegment
+from ..schemas import FrameSegmentSchema, FrameSegmentSchemaCreate, UpdateFrameSegment
 
 
 class CRUDSegment(CRUDBase[FrameSegment, FrameSegmentSchema, FrameSegmentSchemaCreate, UpdateFrameSegment]):

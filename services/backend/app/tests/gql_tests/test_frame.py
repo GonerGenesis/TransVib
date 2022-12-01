@@ -4,6 +4,39 @@ from app.db.models import FrameSegment, Frame
 from tests.utils.utils import random_ship, random_frame, random_point, random_pos
 
 
+def process_yaml(self, file):
+    with open(file) as stream:
+        try:
+            args = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+        for i, point in enumerate(args['points']):
+            if not point.get('id'):
+                point['id'] = i + 1
+        if 'lines' in args:
+            args['segments'] = args.pop('lines')
+        for i, segment in enumerate(args['segments']):
+            if not segment.get('id'):
+                segment['id'] = i + 1
+            try:
+                segment['start'] = segment.pop('from')
+            except KeyError:
+                pass
+            try:
+                segment['end'] = segment.pop('to')
+            except KeyError:
+                pass
+            try:
+                del segment['shared_edge']
+            except KeyError:
+                pass
+        # print(args)
+        if 'x' in args:
+            args['frame_pos'] = args.pop('x')
+    return args
+
+
 async def test_get_frame(http_client, random_setup):
     # ship = await random_ship(1)
     # frame = await random_frame(ship.id)
@@ -64,6 +97,25 @@ async def test_create_frame(http_client):
 
     assert json["data"]["createFrame"]["id"] == (await Frame.all())[-1].id
     assert float(json["data"]["createFrame"]["framePos"]) == pytest.approx(pos, 1e-3)
+
+
+# async def test_create_frame_with_geo(http_client):
+#     ship = await random_ship(1)
+#     mutation = """
+#                     mutation CreateFrame {{
+#                         createFrame(frame: {{framePos: "{}", shipId: {}}}){{
+#                         framePos
+#                         id
+#                         }}
+#                     }} """.format(pos, ship.id)
+#     payload = {"query": mutation}
+#
+#     response = await http_client.post("/graphql", json=payload)
+#     json = response.json()
+#     print('test create frame with geo', json)
+#
+#     assert json["data"]["createFrame"]["id"] == (await Frame.all())[-1].id
+#     assert float(json["data"]["createFrame"]["framePos"]) == pytest.approx(pos, 1e-3)
 
 
 async def test_update_frame(http_client):

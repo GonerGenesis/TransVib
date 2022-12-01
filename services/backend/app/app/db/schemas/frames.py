@@ -12,11 +12,15 @@ class UpdateFrame(BaseModel):
     frame_pos: Optional[float]
 
 
+class FrameGeometry(BaseModel):
+    frame_points: list[UpdateFramePoint]
+    frame_segments: list[UpdateFrameSegment]
+
+
 class FrameSchemaCreateWithGeo(BaseModel):
     frame_pos: float
     ship_id: int
-    frame_points: Optional[list[UpdateFramePoint]]
-    frame_segments: Optional[list[UpdateFrameSegment]]
+    frame_geometry: Optional[FrameGeometry]
 
 
 FrameSchemaCreate = pydantic_model_creator(

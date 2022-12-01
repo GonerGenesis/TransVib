@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 from ..models import Ship
 from .base import CRUDBase
-from ..schemas.ships import ShipSchema, ShipSchemaCreate, UpdateShip
+from ..schemas import ShipSchema, ShipSchemaCreate, UpdateShip
 
 
 class CRUDShip(CRUDBase[Ship, ShipSchema, ShipSchemaCreate, UpdateShip]):

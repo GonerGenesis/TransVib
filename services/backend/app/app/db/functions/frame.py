@@ -2,48 +2,26 @@ from fastapi import HTTPException
 
 from ..models import Frame
 from .base import CRUDBase
-from ..schemas.frames import FrameSchema, FrameSchemaCreate, UpdateFrame
+from ..schemas import FrameSchema, FrameSchemaCreate, UpdateFrame, FrameSchemaCreateWithGeo
 import yaml
 
 
-def process_yaml(self, file):
-    with open(file) as stream:
-        try:
-            args = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-        for i, point in enumerate(args['points']):
-            if not point.get('id'):
-                point['id'] = i + 1
-        if 'lines' in args:
-            args['segments'] = args.pop('lines')
-        for i, segment in enumerate(args['segments']):
-            if not segment.get('id'):
-                segment['id'] = i + 1
-            try:
-                segment['start'] = segment.pop('from')
-            except KeyError:
-                pass
-            try:
-                segment['end'] = segment.pop('to')
-            except KeyError:
-                pass
-            try:
-                del segment['shared_edge']
-            except KeyError:
-                pass
-        # print(args)
-        if 'x' in args:
-            args['frame_pos'] = args.pop('x')
-    return args
-
-
 class CRUDFrame(CRUDBase[Frame, FrameSchema, FrameSchemaCreate, UpdateFrame]):
-    pass
-    # async def create_frame(self, frame_in: FrameSchemaCreate):
-    #     frame_obj = await self.create_frame_obj(frame_in)
-    #     return await FrameSchema.from_tortoise_orm(await frame_obj)
+    # pass
+    async def create(self, frame_in: FrameSchemaCreateWithGeo):
+        frame_in = frame_in.dict()
+        print(frame_in)
+        geometry = frame_in.pop("frame_geometry")
+        if geometry:
+            pass
+        # if "points" in frame_in:
+        #     frame_in.pop("points")
+        # if "segments" in frame_in:
+        #     frame_in.pop("segments")
+        frame = await super().create(FrameSchemaCreate(**frame_in))
+        # frame_obj = await self.create_frame_obj(frame_in)
+        # return await FrameSchema.from_tortoise_orm(await frame_obj)
+        return frame
     #
     # async def create_frame_obj(self, frame_in: FrameSchemaCreate):
     #     try:

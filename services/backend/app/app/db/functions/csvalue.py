@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 from ..models import FrameCSValues
 from .base import CRUDBase
-from ..schemas.csvalues import FrameCSValuesSchema, FrameCSValuesSchemaCreate, FrameCSValuesSchemaUpdate
+from ..schemas import FrameCSValuesSchema, FrameCSValuesSchemaCreate, FrameCSValuesSchemaUpdate
 from app.worker import calc_frame_properties
 
 

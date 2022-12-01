@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 from ..models import FramePoint
 from .base import CRUDBase
-from ..schemas.points import FramePointSchema, FramePointSchemaCreate, UpdateFramePoint
+from ..schemas import FramePointSchema, FramePointSchemaCreate, UpdateFramePoint
 
 
 class CRUDPoint(CRUDBase[FramePoint, FramePointSchema, FramePointSchemaCreate, UpdateFramePoint]):
