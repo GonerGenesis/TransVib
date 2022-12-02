@@ -140,6 +140,7 @@ class FrameSegment(models.Model):
 
 class FramePoint(models.Model):
     id = fields.IntField(pk=True)
+    local_id = fields.IntField(null=True, generated=True)
     frame: fields.ForeignKeyRelation[Frame] = fields.ForeignKeyField("models.Frame", related_name="frame_points")
     y = fields.DecimalField(max_digits=9, decimal_places=3)
     z = fields.DecimalField(max_digits=9, decimal_places=3)
@@ -147,10 +148,10 @@ class FramePoint(models.Model):
     end_segments: fields.ManyToManyRelation["FrameSegment"]
 
     def __hash__(self):
-        return hash((self.id, self.frame_id))
+        return hash((self.local_id, self.frame_id))
 
     def __eq__(self, other):
-        return other and self.id == other.id and self.frame_id == other.frame_id
+        return other and self.id == other.local_id and self.frame_id == other.frame_id
 
     def __ne__(self, other):
         return not self.__eq__(other)

@@ -1,15 +1,18 @@
+import logging
+import re
+from pathlib import Path
+
 import pytest
 import yaml
+import json as jsn
 
-from app.db.models import FrameSegment, Frame
-from tests.utils.utils import random_ship, random_frame, random_point, random_pos
-
-import logging
+from app.db.models import Frame
+from tests.utils.utils import random_ship, random_frame, random_pos
 
 LOGGER = logging.getLogger(__name__)
 
 
-def process_yaml(self, file):
+async def process_yaml(file: Path):
     with open(file) as stream:
         try:
             args = yaml.safe_load(stream)
@@ -20,7 +23,7 @@ def process_yaml(self, file):
             if not point.get('id'):
                 point['id'] = i + 1
         if 'lines' in args:
-            args['segments'] = args.pop('lines')
+            args["segments"] = args.pop('lines')
         for i, segment in enumerate(args['segments']):
             if not segment.get('id'):
                 segment['id'] = i + 1
@@ -104,23 +107,25 @@ async def test_create_frame(http_client):
     assert float(json["data"]["createFrame"]["framePos"]) == pytest.approx(pos, 1e-3)
 
 
-# async def test_create_frame_with_geo(http_client):
-#     ship = await random_ship(1)
-#     mutation = """
-#                     mutation CreateFrame {{
-#                         createFrame(frame: {{framePos: "{}", shipId: {}}}){{
-#                         framePos
-#                         id
-#                         }}
-#                     }} """.format(pos, ship.id)
-#     payload = {"query": mutation}
-#
-#     response = await http_client.post("/graphql", json=payload)
-#     json = response.json()
-#     print('test create frame with geo', json)
-#
-#     assert json["data"]["createFrame"]["id"] == (await Frame.all())[-1].id
-#     assert float(json["data"]["createFrame"]["framePos"]) == pytest.approx(pos, 1e-3)
+async def test_create_frame_with_geo(http_client):
+    ship = await random_ship(1)
+    input_frame = await process_yaml(Path('tests/utils/misc/geometry/yaml/FR-01-VAR_01.yaml'))
+    LOGGER.info(re.sub("\"id\"", "id", jsn.dumps(input_frame['points'])))
+    mutation = """
+                mutation CreateFrame {{
+                    createFrame(frame: {{shipId: {}, framePos: {}, frameGeometry: {{framePoints: {}, frameSegments{}}}}}){{
+                    framePos
+                    id
+                    }}
+                }} """.format(ship.id, input_frame['frame_pos'], jsn.dumps(input_frame['points']), jsn.dumps(input_frame['segments']))
+    payload = {"query": mutation}
+
+    response = await http_client.post("/graphql", json=payload)
+    json = response.json()
+    print('test create frame', json)
+
+    assert json["data"]["createFrame"]["id"] == (await Frame.all())[-1].id
+    assert float(json["data"]["createFrame"]["framePos"]) == pytest.approx(input_frame['frame_pos'], 1e-3)
 
 
 async def test_update_frame(http_client):
