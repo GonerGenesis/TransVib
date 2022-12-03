@@ -8,8 +8,8 @@ from ..db import functions as funcs
 
 if TYPE_CHECKING:
     from .frame_csvalues import FrameCSValuesType
-    from .frame_point import FramePointType, FramePointUpdate
-    from .frame_segment import FrameSegmentType, FrameSegmentUpdate
+    from .frame_point import FramePointType, FramePointImport
+    from .frame_segment import FrameSegmentType, FrameSegmentInput, FrameSegementImport
     from .ship import ShipType
 
 
@@ -35,8 +35,8 @@ class FrameType:
 
 @strawberry.experimental.pydantic.input(model=FrameGeometry)
 class FrameGeometryInput:
-    frame_segments: List[Annotated["FrameSegmentUpdate", strawberry.lazy(".frame_segment")]]
-    frame_points: List[Annotated["FramePointUpdate", strawberry.lazy(".frame_point")]]
+    frame_segments: List[Annotated["FrameSegementImport", strawberry.lazy(".frame_segment")]]
+    frame_points: List[Annotated["FramePointImport", strawberry.lazy(".frame_point")]]
 
 
 @strawberry.experimental.pydantic.input(model=FrameSchemaCreateWithGeo)

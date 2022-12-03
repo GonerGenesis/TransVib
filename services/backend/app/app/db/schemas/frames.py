@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from tortoise.contrib.pydantic import pydantic_model_creator
 
 from ..models import Frame
-from .points import UpdateFramePoint
-from .segments import UpdateFrameSegment
+from .points import FramePointSchemaCreateImport
+from .segments import FrameSegmentSchemaCreate
 
 
 class UpdateFrame(BaseModel):
@@ -13,8 +13,8 @@ class UpdateFrame(BaseModel):
 
 
 class FrameGeometry(BaseModel):
-    frame_points: list[UpdateFramePoint]
-    frame_segments: list[UpdateFrameSegment]
+    frame_points: list[FramePointSchemaCreateImport]
+    frame_segments: list[FrameSegmentSchemaCreate]
 
 
 class FrameSchemaCreateWithGeo(BaseModel):

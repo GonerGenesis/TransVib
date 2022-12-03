@@ -24,6 +24,12 @@ class FrameSegmentType:
 class FrameSegmentInput:
     pass
 
+@strawberry.experimental.pydantic.input(model=FrameSegmentSchemaCreate)
+class FrameSegementImport:
+    start_point_id: strawberry.auto
+    end_point_id: strawberry.auto
+    thick: strawberry.auto
+
 @strawberry.experimental.pydantic.input(model=UpdateFrameSegment, all_fields=True)
 class FrameSegmentUpdate:
     pass

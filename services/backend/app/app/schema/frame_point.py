@@ -4,7 +4,7 @@ from typing import Optional, List, Annotated, TYPE_CHECKING
 import strawberry
 
 from .msg import MsgType
-from ..db.schemas import FramePointSchemaCreate, FramePointSchema, UpdateFramePoint
+from ..db.schemas import FramePointSchemaCreate, FramePointSchema, UpdateFramePoint, FramePointSchemaCreateImport
 from ..db import functions as funcs
 
 if TYPE_CHECKING:
@@ -30,6 +30,10 @@ class FramePointInput:
 
 @strawberry.experimental.pydantic.input(model=UpdateFramePoint, all_fields=True)
 class FramePointUpdate:
+    pass
+
+@strawberry.experimental.pydantic.input(model=FramePointSchemaCreateImport, all_fields=True)
+class FramePointImport:
     pass
 
 
