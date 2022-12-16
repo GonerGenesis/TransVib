@@ -84,7 +84,7 @@ class CrossSectionInertiaValues:
         # y_axis = Ray2D(Point2D(0, 0), angle=0)
         u: FramePoint
         v: FramePoint
-        logger.info(self.graph.edges.data())
+        logger.info("blub ", self.graph.edges.data())
         for (u, v, wt) in self.graph.edges.data():
             # seg: QLineF = wt['edge']
             print(wt)

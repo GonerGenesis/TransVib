@@ -11,12 +11,12 @@ class UserSchemaCreate(BaseModel):
     full_name: Optional[str]
     password: str
 
-    # @validator('username', 'full_name', 'password')
-    # def field_not_empty(cls, v):
-    #     # print(v)
-    #     if not (v and v.strip()):
-    #         raise ValueError('field doesn\'t accept empty string')
-    #     return v
+    @validator('username', 'full_name', 'password')
+    def field_not_empty(cls, v):
+        # print(v)
+        if not (v and v.strip()):
+            raise ValueError('field doesn\'t accept empty string')
+        return v
 
 
 class UserSchemaUpdate(BaseModel):

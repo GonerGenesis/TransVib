@@ -11,7 +11,7 @@ from tortoise.contrib.pydantic import PydanticListModel
 from tortoise.fields import ReverseRelation
 from tortoise.transactions import in_transaction
 
-from ...db.models import Frame, FrameCSValues, FrameSegment
+from ...db.models import Frame, FrameCSValues, FrameSegment, FramePoint
 from ...db.schemas import FrameSchema, FrameSegmentSchema
 from app.calc.csvalues import cs_inertia, cs_torsion
 from app.core.config import get_settings, TORTOISE_ORM
@@ -66,7 +66,7 @@ async def calc_frame_properties(frame_id: int, conn_name: str = 'default', debug
         frame_segments = frame.frame_segments
         frame_props: FrameCSValues = frame.cs_values
         logger.info("frame_props: %s", frame_props)
-        logger.info("frame_segments: %s", frame.frame_segments)
+        # logger.info("frame_segments: %s", frame.frame_segments)
         logger.info("frame_segments_objects: %s", frame.frame_segments.related_objects)
         if frame_props:
             if frame_props.modified_at >= frame.modified_at:
@@ -84,13 +84,16 @@ async def calc_frame_properties(frame_id: int, conn_name: str = 'default', debug
 async def write_results_to_db(frame: Frame, frame_props: FrameCSValues):
     graph = nx.Graph()
     frame_segments = frame.frame_segments
-    logger.info("frame_segments: {}".format(frame_segments))
+    logger.info("frame_segments: {}".format(frame_segments.related_objects))
+    logger.info("frame_points: {}".format(frame.frame_points.related_objects))
     edge: FrameSegment
-    for edge in frame_segments:
+    for edge in frame_segments.related_objects:
         # logger.info("edge: %s", edge.fetch_related())
-        egde = edge
-        logger.info("p1: %s, p2: %s", await edge.start_point.first(), await edge.end_point.first())
-        graph.add_edge(await edge.start_point.first(), await edge.end_point.first(), thick=float(edge.thick))
+        # egde = edge
+        p1: FramePoint = await edge.start_point
+        p2: FramePoint = await edge.end_point
+        logger.info("p1: %s, p2: %s", p1.id, p2)
+        graph.add_edge(p1, p2, thick=float(edge.thick))
     logger.info(graph)
     calc_frame = FrameCalculations(graph, logger)
     inertia: cs_inertia.CrossSectionInertiaValues = calc_frame.cs_inertia
