@@ -14,7 +14,7 @@ class CRUDFrame(CRUDBase[Frame, FrameSchema, FrameSchemaCreate, UpdateFrame]):
     # pass
     async def create(self, frame_in: FrameSchemaCreateWithGeo):
         frame_in = frame_in.dict()
-        LOGGER.info(frame_in)
+        # LOGGER.info(frame_in)
         geometry = frame_in.pop("frame_geometry")
         if geometry:
             pass
