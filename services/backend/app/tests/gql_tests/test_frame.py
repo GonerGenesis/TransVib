@@ -111,15 +111,17 @@ async def test_create_frame(http_client):
 async def test_create_frame_with_geo(http_client):
     ship = await random_ship(1)
     input_frame = import_geometry(Path('tests/utils/misc/geometry/dat/FR-01-VAR1.dat'))
-    LOGGER.info(input_frame)
-    LOGGER.info(re.sub(r"\"([idyz]*)\"", r"\1", jsn.dumps(input_frame['points'])))
+    # LOGGER.info(input_frame)
+    # LOGGER.info(re.sub(r"\"([idyz]*)\"", r"\1", jsn.dumps(input_frame['points'])))
     mutation = """
                 mutation CreateFrame {{
-                    createFrame(frame: {{shipId: {}, framePos: {}, frameGeometry: {{framePoints: {}, frameSegments{}}}}}){{
+                    createFrame(frame: {{shipId: {}, framePos: {}, frameGeometry: {{framePoints: {}, frameSegments: {}}}}}){{
                     framePos
                     id
                     }}
-                }} """.format(ship.id, 600, re.sub(r"\"([idyz]*)\"", r"\1", jsn.dumps(input_frame['points'])), jsn.dumps(input_frame['segments']))
+                }} """.format(ship.id, 600, re.sub(r"\"([idyz]*)\"", r"\1", jsn.dumps(input_frame['points'])),
+                              re.sub(r"\"([a-zA-Z]+)\":", r"\1:", jsn.dumps(input_frame['segments'])))
+    print(mutation)
     payload = {"query": mutation}
 
     response = await http_client.post("/graphql", json=payload)

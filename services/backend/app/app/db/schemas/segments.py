@@ -1,3 +1,4 @@
+import decimal
 from typing import Optional
 
 from pydantic import BaseModel
@@ -20,7 +21,7 @@ FrameSegmentSchemaCreate = pydantic_model_creator(
 class FrameSegmentSchemaImport(BaseModel):
     start_point_id: int
     end_point_id: int
-    thick: float
+    thick: decimal.Decimal
 
 
 FrameSegmentSchema = pydantic_model_creator(
