@@ -19,7 +19,6 @@ FramePointSchemaCreate = pydantic_model_creator(
 class FramePointSchemaCreateImport(BaseModel):
     z: decimal.Decimal
     y: decimal.Decimal
-    input_id: int
 
 FramePointSchema = pydantic_model_creator(
     FramePoint, name=f"{FramePoint.__name__}Schema",

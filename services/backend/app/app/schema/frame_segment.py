@@ -2,7 +2,7 @@ from typing import Annotated, TYPE_CHECKING
 import strawberry
 
 from .msg import MsgType
-from ..db.schemas import FrameSegmentSchemaCreate, FrameSegmentSchema, UpdateFrameSegment
+from ..db.schemas import FrameSegmentSchemaCreate, FrameSegmentSchema, FrameSegmentSchemaImport, UpdateFrameSegment
 from ..db import functions as funcs
 
 if TYPE_CHECKING:
@@ -24,11 +24,11 @@ class FrameSegmentType:
 class FrameSegmentInput:
     pass
 
-@strawberry.experimental.pydantic.input(model=FrameSegmentSchemaCreate)
+@strawberry.experimental.pydantic.input(model=FrameSegmentSchemaImport, all_fields=True)
 class FrameSegementImport:
-    start_point_id: strawberry.auto
-    end_point_id: strawberry.auto
-    thick: strawberry.auto
+    start_point_id: int
+    end_point_id: int
+    thick: float
 
 @strawberry.experimental.pydantic.input(model=UpdateFrameSegment, all_fields=True)
 class FrameSegmentUpdate:

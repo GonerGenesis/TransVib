@@ -16,6 +16,13 @@ FrameSegmentSchemaCreate = pydantic_model_creator(
     FrameSegment, name=f"{FrameSegment.__name__}SchemaCreate", exclude_readonly=True
 )
 
+
+class FrameSegmentSchemaImport(BaseModel):
+    start_point_id: int
+    end_point_id: int
+    thick: float
+
+
 FrameSegmentSchema = pydantic_model_creator(
     FrameSegment, name=f"{FrameSegment.__name__}Schema",
 )

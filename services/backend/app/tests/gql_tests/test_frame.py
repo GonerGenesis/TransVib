@@ -7,6 +7,7 @@ import yaml
 import json as jsn
 
 from app.db.models import Frame
+from tests.utils.misc.geometry.import_dat_geomtry import import_geometry
 from tests.utils.utils import random_ship, random_frame, random_pos
 
 LOGGER = logging.getLogger(__name__)
@@ -109,7 +110,8 @@ async def test_create_frame(http_client):
 
 async def test_create_frame_with_geo(http_client):
     ship = await random_ship(1)
-    input_frame = await process_yaml(Path('tests/utils/misc/geometry/yaml/FR-01-VAR_01.yaml'))
+    input_frame = import_geometry(Path('tests/utils/misc/geometry/dat/FR-01-VAR1.dat'))
+    LOGGER.info(input_frame)
     LOGGER.info(re.sub(r"\"([idyz]*)\"", r"\1", jsn.dumps(input_frame['points'])))
     mutation = """
                 mutation CreateFrame {{
@@ -117,7 +119,7 @@ async def test_create_frame_with_geo(http_client):
                     framePos
                     id
                     }}
-                }} """.format(ship.id, input_frame['frame_pos'], jsn.dumps(input_frame['points']), jsn.dumps(input_frame['segments']))
+                }} """.format(ship.id, 600, re.sub(r"\"([idyz]*)\"", r"\1", jsn.dumps(input_frame['points'])), jsn.dumps(input_frame['segments']))
     payload = {"query": mutation}
 
     response = await http_client.post("/graphql", json=payload)
@@ -125,7 +127,7 @@ async def test_create_frame_with_geo(http_client):
     print('test create frame', json)
 
     assert json["data"]["createFrame"]["id"] == (await Frame.all())[-1].id
-    assert float(json["data"]["createFrame"]["framePos"]) == pytest.approx(input_frame['frame_pos'], 1e-3)
+    assert float(json["data"]["createFrame"]["framePos"]) == pytest.approx(600, 1e-3)
 
 
 async def test_update_frame(http_client, random_setup):
