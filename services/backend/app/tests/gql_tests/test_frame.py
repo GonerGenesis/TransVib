@@ -116,8 +116,18 @@ async def test_create_frame_with_geo(http_client):
     mutation = """
                 mutation CreateFrame {{
                     createFrame(frame: {{shipId: {}, framePos: {}, frameGeometry: {{framePoints: {}, frameSegments: {}}}}}){{
-                    framePos
-                    id
+                        framePos
+                        id
+                        framePoints {{
+                              y
+                              z
+                              endsSegments {{
+                                id
+                              }}
+                              startsSegments {{
+                                id
+                              }}
+                        }}
                     }}
                 }} """.format(ship.id, 600, re.sub(r"\"([idyz]*)\"", r"\1", jsn.dumps(input_frame['points'])),
                               re.sub(r"\"([a-zA-Z]+)\":", r"\1:", jsn.dumps(input_frame['segments'])))
@@ -126,7 +136,7 @@ async def test_create_frame_with_geo(http_client):
 
     response = await http_client.post("/graphql", json=payload)
     json = response.json()
-    print('test create frame', json)
+    LOGGER.info('test create frame {}'.format(json))
 
     assert json["data"]["createFrame"]["id"] == (await Frame.all())[-1].id
     assert float(json["data"]["createFrame"]["framePos"]) == pytest.approx(600, 1e-3)
