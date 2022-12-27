@@ -26,8 +26,8 @@ class CRUDFrame(CRUDBase[Frame, FrameSchema, FrameSchemaCreate, UpdateFrame]):
                 points.append(await point.create(FramePointSchemaCreate(**frame_point, frame_id = int_frame.id)))
             frame_segments = geometry["frame_segments"]
             for frame_segment in frame_segments:
-                LOGGER.info("start_point")
-                LOGGER.info(frame_segment["start_point_id"])
+                # LOGGER.info("start_point")
+                # LOGGER.info(frame_segment["start_point_id"])
                 p1 = points[frame_segment["start_point_id"]]
                 p2 = points[frame_segment["end_point_id"]]
                 # LOGGER.info(p1)

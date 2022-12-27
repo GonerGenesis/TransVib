@@ -136,7 +136,8 @@ async def test_create_frame_with_geo(http_client):
 
     response = await http_client.post("/graphql", json=payload)
     json = response.json()
-    LOGGER.info('test create frame {}'.format(json))
+    # LOGGER.info('test create frame {}'.format(json))
+    print('test create frame {}'.format(json))
 
     assert json["data"]["createFrame"]["id"] == (await Frame.all())[-1].id
     assert float(json["data"]["createFrame"]["framePos"]) == pytest.approx(600, 1e-3)
