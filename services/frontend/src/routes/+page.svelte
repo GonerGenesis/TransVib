@@ -3,8 +3,12 @@
 	import { spring } from 'svelte/motion'
 	import { degToRad } from 'three/src/math/MathUtils'
 	import Sidebar from "../components/Sidebar.svelte";
+	import {ApolloClient, gql} from '@apollo/client';
+	import {setClient, getClient, query} from 'svelte-apollo';
 
 	const scale = spring(2)
+	const client = new ApolloClient({uri: 'https://geodb-cities-graphql.p.rapidapi.com/'});
+setClient(client);
 </script>
 
 <div class="h-screen">
