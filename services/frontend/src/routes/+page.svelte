@@ -2,13 +2,16 @@
 	import { T, Canvas, InteractiveObject, OrbitControls} from '@threlte/core'
 	import { spring } from 'svelte/motion'
 	import { degToRad } from 'three/src/math/MathUtils'
-	import Sidebar from "../components/Sidebar.svelte";
-	import {ApolloClient, gql} from '@apollo/client';
-	import {setClient, getClient, query} from 'svelte-apollo';
+	import Sidebar from "../components/Sidebar.svelte"
+	import {ApolloClient, gql, InMemoryCache} from '@apollo/client'
+	import {setClient, getClient, query} from 'svelte-apollo'
 
 	const scale = spring(2)
-	const client = new ApolloClient({uri: 'https://geodb-cities-graphql.p.rapidapi.com/'});
-setClient(client);
+	const client = new ApolloClient({
+		uri: 'https://http://0.0.0.0:5000/graphql',
+		cache: new InMemoryCache()
+	})
+	setClient(client);
 </script>
 
 <div class="h-screen">
