@@ -1,0 +1,199 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type FrameCSValuesType {
+    aqy: Float!
+    aqz: Float!
+    area: Float!
+    awwm: Float!
+    ay: Float!
+    ayy: Float!
+    ayys: Float!
+    ayz: Float!
+    ayzs: Float!
+    az: Float!
+    azz: Float!
+    azzs: Float!
+    center: PointType!
+    createdAt: DateTime!
+    frame: FrameType!
+    frameId: Int!
+    i1: Float!
+    i2: Float!
+    ir1: Float!
+    ir2: Float!
+    it: Float!
+    modifiedAt: DateTime!
+    phi: Float!
+    shearCenter: PointType!
+}
+
+type FramePointType {
+    endsSegments: [FrameSegmentType!]!
+    frame: FrameType!
+    id: Int!
+    startsSegments: [FrameSegmentType!]!
+    y: Decimal!
+    z: Decimal!
+}
+
+type FrameSegmentType {
+    endPoint: FramePointType!
+    frame: FrameType!
+    id: Int!
+    startPoint: FramePointType!
+    thick: Float!
+}
+
+type FrameType {
+    csValues: FrameCSValuesType!
+    framePoints: [FramePointType!]!
+    framePos: Float!
+    frameSegments: [FrameSegmentType!]!
+    id: Int!
+    ship: ShipType!
+}
+
+type MsgType {
+    id: Int
+    msg: String!
+    type: String
+}
+
+type Mutation {
+    createFrame(frame: FrameInput!): FrameType!
+    createPoint(point: FramePointInput!): FramePointType!
+    createSegment(segment: FrameSegmentInput!): FrameSegmentType!
+    createShip(ship: ShipInput!): ShipType!
+    createUser(user: UserInput!): UserType!
+    deleteFrame(id: Int!): MsgType!
+    deletePoint(id: Int!): MsgType!
+    deleteSegment(id: Int!): MsgType!
+    deleteShip(id: Int!): MsgType!
+    deleteUser(id: Int!): MsgType!
+    updateFrame(frame: FrameUpdate!, frameId: Int!): FrameType!
+    updatePoint(point: FramePointUpdate!, pointId: Int!): FramePointType!
+    updateSegment(segment: FrameSegmentUpdate!, segmentId: Int!): FrameSegmentType!
+    updateShip(ship: ShipUpdate!, shipId: Int!): ShipType!
+    updateUser(user: UserUpdate!, userId: Int!): UserType!
+}
+
+type NoteType {
+    content: String!
+    createdAt: DateTime!
+    id: Int!
+    modifiedAt: DateTime!
+    title: String!
+}
+
+type PointType {
+    y: Float!
+    z: Float!
+}
+
+type Query {
+    getCsValues(id: Int!): FrameCSValuesType!
+    getFrame(id: Int!): FrameType!
+    getPoint(id: Int!): FramePointType!
+    getSegment(id: Int!): FrameSegmentType!
+    getShip(id: Int!): ShipType!
+    getUser(id: Int!): UserType!
+}
+
+type ShipType {
+    author: UserType!
+    description: String
+    frames: [FrameType!]!
+    id: Int!
+    title: String!
+}
+
+type UserType {
+    fullName: String
+    id: Int!
+    notes: [NoteType!]!
+    ships: [ShipType!]!
+    username: String!
+}
+
+"Date with time (isoformat)"
+scalar DateTime
+
+"Decimal (fixed-point)"
+scalar Decimal
+
+input FrameGeometryInput {
+    framePoints: [FramePointImport!]!
+    frameSegments: [FrameSegementImport!]!
+}
+
+input FrameInput {
+    frameGeometry: FrameGeometryInput
+    framePos: Float!
+    shipId: Int!
+}
+
+input FramePointImport {
+    y: Decimal!
+    z: Decimal!
+}
+
+input FramePointInput {
+    frameId: Int!
+    y: Decimal!
+    z: Decimal!
+}
+
+input FramePointUpdate {
+    y: Decimal
+    z: Decimal
+}
+
+input FrameSegementImport {
+    endPointId: Int!
+    startPointId: Int!
+    thick: Decimal!
+}
+
+input FrameSegmentInput {
+    endPointId: Int!
+    frameId: Int!
+    startPointId: Int!
+    thick: Decimal!
+}
+
+input FrameSegmentUpdate {
+    endPointId: Int
+    startPointId: Int
+    thick: Float
+}
+
+input FrameUpdate {
+    framePos: Float
+}
+
+input ShipInput {
+    authorId: Int!
+    description: String!
+    title: String!
+}
+
+input ShipUpdate {
+    description: String
+    title: String
+}
+
+input UserInput {
+    fullName: String
+    password: String!
+    username: String!
+}
+
+input UserUpdate {
+    fullName: String
+    username: String
+}
