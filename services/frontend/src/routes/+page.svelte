@@ -17,7 +17,7 @@
     (async() =>{
        let res = await ships.result()
        console.log(res.data)
-    })
+    })()
 
 
 /*    function reload() {
