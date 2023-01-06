@@ -3,7 +3,7 @@
     import {spring} from 'svelte/motion'
     import {degToRad} from 'three/src/math/MathUtils'
     import Sidebar from "../components/Sidebar.svelte"
-    import {getClient, query, setClient} from 'svelte-apollo'
+    import {getClient, query, mutation} from 'svelte-apollo'
     import {GET_SHIP} from "./queries";
     // import {client} from "../hooks.client";
 
@@ -11,6 +11,14 @@
 
     const client = getClient()
     const ships = query(GET_SHIP);
+
+    console.log("moep");
+
+    (async() =>{
+       let res = await ships.result()
+       console.log(res.data)
+    })
+
 
 /*    function reload() {
         ships.refetch();
@@ -34,7 +42,7 @@
     </ul>
   </div>
   <div class="flex flex-row w-full h-full">
-    <Sidebar ships={$ships.data.getShip.frames}/>
+    <Sidebar />
     <div class="basis-3/4 grow">
       <Canvas>
         <T.PerspectiveCamera makeDefault position={[10, 10, 10]} fov={24}>
