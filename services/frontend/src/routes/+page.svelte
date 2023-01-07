@@ -14,10 +14,8 @@
 
     console.log("moep");
 
-    (async() =>{
-       let res = await ships.result()
-       console.log(res.data)
-    })()
+    // ships.result().then((result) => console.log(result))
+
 
 
 /*    function reload() {
