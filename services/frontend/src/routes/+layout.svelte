@@ -1,14 +1,11 @@
 <script>
     import "../app.css";
-    import {ApolloClient, InMemoryCache} from "@apollo/client";
-    import {setClient} from "svelte-apollo";
+    import {createClient, setContextClient} from '@urql/svelte'
 
-    const client = new ApolloClient({
-        uri: 'http://0.0.0.0:5000/graphql',
-        cache: new InMemoryCache()
-    });
-
-    setClient(client);
+    const client = createClient({
+        url: `http://0.0.0.0:5000/graphql`,
+    })
+    setContextClient(client)
 </script>
 
 <slot/>

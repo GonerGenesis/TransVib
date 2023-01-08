@@ -5,7 +5,7 @@ const config: UserConfig = {
 	plugins: [sveltekit()],
 	ssr: {
 		noExternal: ['three', 'troika-three-text']
-	}
+	},
 };
 
 export default config;

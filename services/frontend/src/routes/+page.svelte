@@ -3,26 +3,29 @@
     import {spring} from 'svelte/motion'
     import {degToRad} from 'three/src/math/MathUtils'
     import Sidebar from "../components/Sidebar.svelte"
-    import {getClient, query, mutation} from 'svelte-apollo'
-    import {GET_SHIP} from "./queries";
+    import {GET_SHIP_NAME} from "./queries";
+    import {getContextClient, queryStore} from "@urql/svelte";
     // import {client} from "../hooks.client";
 
     const scale = spring(2);
-
-    const client = getClient()
-    const ships = query(GET_SHIP);
-
     console.log("moep");
+    let ships
+    let id
 
-    // ships.result().then((result) => console.log(result))
+    /*    function reload() {
+            ships.refetch();
+        }*/
 
-
-
-/*    function reload() {
-        ships.refetch();
-    }*/
-
-    $: ships.refetch()
+    $: {
+        ships = queryStore({
+            client: getContextClient(),
+            query: GET_SHIP_NAME
+        });
+        console.log($ships)
+        if (!$ships.fetching){
+            id = $ships.data.getShip.id
+        }
+    }
     // console.log($ships.data)
 </script>
 
@@ -30,7 +33,7 @@
   <div class="text-center w-auto">
     <h1 class="text-3xl font-bold underline ">Welcome to TransVib</h1>
     <ul>
-      {#if $ships.loading}
+      {#if $ships.fetching}
         <li>Loading...</li>
       {:else if $ships.error}
         <li>ERROR: {$ships.error.message}</li>
@@ -40,7 +43,7 @@
     </ul>
   </div>
   <div class="flex flex-row w-full h-full">
-    <Sidebar />
+    <Sidebar ship_id={id}/>
     <div class="basis-3/4 grow">
       <Canvas>
         <T.PerspectiveCamera makeDefault position={[10, 10, 10]} fov={24}>
