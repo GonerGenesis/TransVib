@@ -13,15 +13,17 @@ export const GET_SHIP_NAME = gql`
 export const GET_SHIP_FRAMES = gql`
     query GetShipData($ship_id: Int!) {
         getShip(id: $ship_id){
+            title
             frames {
                 id
+                framePos
             }
         }
     }
 `
 
 export const GET_FRAME = gql`
-    query GetFrameData($id: int) {
+    query GetFrameData($id: Int!) {
         getFrame(id: $id){
             framePoints {
                 id

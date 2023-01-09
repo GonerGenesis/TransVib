@@ -43,7 +43,9 @@
     </ul>
   </div>
   <div class="flex flex-row w-full h-full">
-    <Sidebar ship_id={id}/>
+    <div class="w-1/12">
+      <Sidebar ship_id={id}/>
+    </div>
     <div class="basis-3/4 grow">
       <Canvas>
         <T.PerspectiveCamera makeDefault position={[10, 10, 10]} fov={24}>
