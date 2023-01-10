@@ -1,21 +1,16 @@
 <script lang="ts">
     import {getContextClient, mutationStore, queryStore} from "@urql/svelte";
-    import {GET_SHIP_FRAMES, GET_SHIP_NAME} from "../routes/queries";
-    import {ADD_FRAME} from "../routes/mutations";
+    import {GET_SHIP_FRAMES, GET_SHIP_NAME} from "$lib/gql_actions/queries.ts";
+    import AddFramePopUp from "./AddFramePopUp.svelte";
 
     export let ship_id
     let ship
     let result
 
-    function addFrame({framePos, shipId}) {
-        // noinspection TypeScriptValidateTypes
-        result = mutationStore({
-            client: getContextClient(),
-            query: ADD_FRAME,
-            variables: {framePos, shipId},
-        })
-        alert("add Frame")
-        return result
+    let showModal = false
+    function handleToggleModal(){
+        showModal = !showModal
+        //alert('clicked')
     }
 
     $: {
@@ -27,7 +22,7 @@
                 query: GET_SHIP_FRAMES,
                 variables: {ship_id}
             });
-            console.log($ship)
+            // console.log($ship)
         }
     }
 </script>
@@ -47,9 +42,19 @@
       {/if}
     {/if}
   </ol>
-  <button on:click={addFrame(ship_id)}
+  <button on:click={handleToggleModal}
           class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">
     +
   </button>
+  <AddFramePopUp
+  title="Edit your details"
+  open={showModal}
+  on:close={handleToggleModal}
+  >
+  <!--<svelte:fragment slot="body">
+    This is content inside my modal! 👋
+  </svelte:fragment>-->
+  </AddFramePopUp>
+
 
 </div>

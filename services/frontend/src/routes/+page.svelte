@@ -2,8 +2,8 @@
     import {Canvas, InteractiveObject, OrbitControls} from '@threlte/core'
     import {spring} from 'svelte/motion'
     import {degToRad} from 'three/src/math/MathUtils'
-    import Sidebar from "../components/Sidebar.svelte"
-    import {GET_SHIP_NAME} from "./queries";
+    import Sidebar from "../lib/components/Sidebar.svelte"
+    import {GET_SHIP_NAME} from "../lib/gql_actions/queries";
     import {getContextClient, queryStore} from "@urql/svelte";
     // import {client} from "../hooks.client";
 
@@ -21,7 +21,7 @@
             client: getContextClient(),
             query: GET_SHIP_NAME
         });
-        console.log($ships)
+        // console.log($ships)
         if (!$ships.fetching){
             id = $ships.data.getShip.id
         }
