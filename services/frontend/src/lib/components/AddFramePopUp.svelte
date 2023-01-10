@@ -6,6 +6,9 @@
     export let open = false
     export let title = ''
     const dispatch = createEventDispatcher()
+    function handleClick(){
+        alert('form close')
+    }
 </script>
 
 
